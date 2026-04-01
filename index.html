@@ -3,249 +3,224 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplikasi Pohon Nasab</title>
+    <title>Silsilah Keluarga - Struktur Garis Tengah</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        .tree-container {
+        .family-group {
             display: flex;
-            padding: 20px;
-            align-items: flex-start;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 15px;
+        }
+        .couple-container {
+            display: flex;
+            align-items: center;
+            position: relative;
+            padding-bottom: 20px;
+        }
+        /* Garis horizontal antara pasangan */
+        .couple-container::after {
+            content: "";
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background: #3b82f6;
+            z-index: -1;
+            transform: translateX(-50%);
+        }
+        /* Garis vertikal ke arah anak */
+        .vertical-line {
+            width: 2px;
+            height: 20px;
+            background: #3b82f6;
+        }
+        .children-container {
+            display: flex;
+            justify-content: center;
+            border-top: 2px solid #3b82f6;
+            padding-top: 20px;
+            position: relative;
         }
         .member-card {
-            min-width: 150px;
-            border: 2px solid #3b82f6;
+            min-width: 130px;
+            padding: 10px;
             background: white;
-            transition: all 0.3s;
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            text-align: center;
+            z-index: 10;
         }
-        .member-card:hover {
-            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.5);
-        }
-        .connector {
-            height: 2px;
-            background-color: #93c5fd;
-            flex-grow: 1;
-            align-self: center;
+        .partner-card {
+            border-color: #ec4899;
+            margin-left: 30px;
         }
     </style>
 </head>
-<body class="bg-blue-50 min-h-screen font-sans">
+<body class="bg-blue-50 min-h-screen">
 
-    <nav class="bg-blue-700 text-white p-4 shadow-lg sticky top-0 z-50">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-bold">🌳 Silsilah Keluarga (Nasab)</h1>
-            <div class="space-x-2">
-                <button onclick="exportToPDF()" class="bg-blue-500 hover:bg-blue-400 px-3 py-1 rounded text-sm transition">PDF</button>
-                <button onclick="exportToExcel()" class="bg-green-600 hover:bg-green-500 px-3 py-1 rounded text-sm transition">Excel</button>
-                <button onclick="resetData()" class="bg-red-500 hover:bg-red-400 px-3 py-1 rounded text-sm transition">Reset</button>
-            </div>
+    <nav class="bg-blue-800 text-white p-4 shadow-md sticky top-0 z-50 flex justify-between items-center">
+        <h1 class="text-lg font-bold">🌳 Aplikasi Silsilah Keluarga</h1>
+        <div class="space-x-2">
+            <button onclick="exportToPDF()" class="bg-blue-600 hover:bg-blue-500 px-3 py-1 rounded text-sm">PDF</button>
+            <button onclick="exportToExcel()" class="bg-green-600 hover:bg-green-500 px-3 py-1 rounded text-sm">Excel</button>
+            <button onclick="resetData()" class="bg-red-500 hover:bg-red-400 px-3 py-1 rounded text-sm">Reset</button>
         </div>
     </nav>
 
-    <main class="container mx-auto p-4 overflow-x-auto">
-        <div id="tree-root" class="tree-container">
-            </div>
+    <main class="p-10 overflow-auto">
+        <div id="tree-root" class="flex justify-center"></div>
     </main>
 
-    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4 z-[100]">
-        <div class="bg-white rounded-lg p-6 w-full max-w-md shadow-2xl">
-            <h2 id="modal-title" class="text-xl font-bold mb-4 text-blue-800">Tambah Anggota</h2>
-            <input type="hidden" id="parent-id">
-            <input type="hidden" id="edit-id">
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-[100]">
+        <div class="bg-white p-6 rounded-lg w-80 shadow-xl">
+            <h2 id="modal-title" class="font-bold text-blue-800 mb-4">Tambah Data</h2>
+            <input type="hidden" id="target-id">
             <input type="hidden" id="action-type">
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Nama Lengkap</label>
-                    <input type="text" id="member-name" class="w-full border-blue-300 border p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none">
-                </div>
-                <div class="flex gap-4">
-                    <div class="flex-1">
-                        <label class="block text-sm font-medium text-gray-700">Gender</label>
-                        <select id="member-gender" class="w-full border-blue-300 border p-2 rounded">
-                            <option value="Laki-laki">Laki-laki</option>
-                            <option value="Perempuan">Perempuan</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-6 flex justify-end space-x-3">
-                <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">Batal</button>
-                <button onclick="saveMember()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Simpan Data</button>
+            <input type="text" id="member-name" placeholder="Nama Lengkap" class="w-full border p-2 mb-3 rounded">
+            <select id="member-gender" class="w-full border p-2 mb-4 rounded">
+                <option value="Laki-laki">Laki-laki</option>
+                <option value="Perempuan">Perempuan</option>
+            </select>
+            <div class="flex justify-end gap-2">
+                <button onclick="closeModal()" class="text-gray-500 text-sm">Batal</button>
+                <button onclick="saveMember()" class="bg-blue-700 text-white px-4 py-1 rounded">Simpan</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Data Structure & Storage
-        let familyData = JSON.parse(localStorage.getItem('nasabData')) || {
-            id: "1",
-            name: "Kepala Keluarga Pertama",
+        let familyData = JSON.parse(localStorage.getItem('nasabDataV2')) || {
+            id: "root",
+            name: "Kepala Keluarga",
             gender: "Laki-laki",
             partners: [],
             children: []
         };
 
-        function saveData() {
-            localStorage.setItem('nasabData', JSON.stringify(familyData));
-            renderTree();
-        }
-
-        // Tree Rendering Logic
         function renderTree() {
-            const rootContainer = document.getElementById('tree-root');
-            rootContainer.innerHTML = '';
-            rootContainer.appendChild(createNodeElement(familyData));
+            const root = document.getElementById('tree-root');
+            root.innerHTML = '';
+            root.appendChild(drawNode(familyData));
         }
 
-        function createNodeElement(person) {
-            const wrapper = document.createElement('div');
-            wrapper.className = "flex flex-col items-start mr-8";
+        function drawNode(person) {
+            const group = document.createElement('div');
+            group.className = "family-group";
 
+            // Couple row
+            const coupleDiv = document.createElement('div');
+            coupleDiv.className = "couple-container";
+
+            // Main Person
             const card = document.createElement('div');
-            card.className = `member-card p-3 rounded-lg shadow-md border-l-8 ${person.gender === 'Laki-laki' ? 'border-blue-600' : 'border-pink-400'}`;
-            
+            card.className = `member-card ${person.gender === 'Perempuan' ? 'border-pink-500' : 'border-blue-600'}`;
             card.innerHTML = `
-                <p class="font-bold text-blue-900">${person.name}</p>
-                <p class="text-xs text-gray-500 mb-2">${person.gender}</p>
-                <div class="grid grid-cols-2 gap-1 text-[10px]">
-                    <button onclick="openModal('edit', '${person.id}')" class="bg-gray-100 p-1 rounded hover:bg-blue-100">Edit</button>
-                    <button onclick="openModal('child', '${person.id}')" class="bg-blue-600 text-white p-1 rounded hover:bg-blue-700">+ Anak</button>
-                    <button onclick="openModal('partner', '${person.id}')" class="bg-indigo-500 text-white p-1 rounded col-span-2 mt-1">+ Pasangan</button>
+                <div class="text-xs font-semibold uppercase text-gray-400">${person.gender}</div>
+                <div class="font-bold text-blue-900">${person.name}</div>
+                <div class="mt-2 flex flex-wrap gap-1 justify-center">
+                    <button onclick="openModal('edit', '${person.id}')" class="text-[9px] bg-gray-100 px-1 rounded">Edit</button>
+                    <button onclick="openModal('child', '${person.id}')" class="text-[9px] bg-blue-600 text-white px-1 rounded">+ Anak</button>
+                    <button onclick="openModal('partner', '${person.id}')" class="text-[9px] bg-pink-500 text-white px-1 rounded">+ Pasangan</button>
                 </div>
             `;
+            coupleDiv.appendChild(card);
 
-            wrapper.appendChild(card);
+            // Partners
+            person.partners.forEach(partner => {
+                const pCard = document.createElement('div');
+                pCard.className = "member-card partner-card";
+                pCard.innerHTML = `<div class="text-xs text-pink-400 font-bold italic">Pasangan</div><div class="font-bold">${partner.name}</div>`;
+                coupleDiv.appendChild(pCard);
+            });
 
-            // Render Partners (Pasangan)
-            if (person.partners && person.partners.length > 0) {
-                const partnerContainer = document.createElement('div');
-                partnerContainer.className = "ml-4 mt-2 border-l-2 border-dashed border-blue-300 pl-4";
-                person.partners.forEach(p => {
-                    const pEl = document.createElement('div');
-                    pEl.className = "text-sm text-indigo-700 italic mb-1 bg-white p-1 rounded border border-indigo-100";
-                    pEl.innerText = `❤️ ${p.name}`;
-                    partnerContainer.appendChild(pEl);
-                });
-                wrapper.appendChild(partnerContainer);
-            }
+            group.appendChild(coupleDiv);
 
-            // Render Children (Anak - Urutan ke kanan)
-            if (person.children && person.children.length > 0) {
-                const childrenWrapper = document.createElement('div');
-                childrenWrapper.className = "flex mt-6 pt-4 border-t border-blue-200";
+            // Children Logic
+            if (person.children.length > 0) {
+                const line = document.createElement('div');
+                line.className = "vertical-line";
+                group.appendChild(line);
+
+                const childrenDiv = document.createElement('div');
+                childrenDiv.className = "children-container";
                 person.children.forEach(child => {
-                    childrenWrapper.appendChild(createNodeElement(child));
+                    childrenDiv.appendChild(drawNode(child));
                 });
-                wrapper.appendChild(childrenWrapper);
+                group.appendChild(childrenDiv);
             }
 
-            return wrapper;
+            return group;
         }
 
-        // CRUD Operations
         function openModal(type, id) {
-            const modal = document.getElementById('modal');
-            const title = document.getElementById('modal-title');
             document.getElementById('action-type').value = type;
-            document.getElementById('parent-id').value = id;
-            
-            if(type === 'edit') {
-                const person = findPerson(familyData, id);
-                document.getElementById('member-name').value = person.name;
-                document.getElementById('member-gender').value = person.gender;
-                title.innerText = "Edit Anggota";
-            } else {
-                document.getElementById('member-name').value = '';
-                title.innerText = type === 'child' ? "Tambah Anak" : "Tambah Pasangan";
-            }
-            
-            modal.classList.remove('hidden');
+            document.getElementById('target-id').value = id;
+            document.getElementById('modal').classList.remove('hidden');
         }
 
         function closeModal() {
             document.getElementById('modal').classList.add('hidden');
+            document.getElementById('member-name').value = '';
         }
 
-        function findPerson(node, id) {
-            if (node.id === id) return node;
-            for (let child of node.children) {
-                let found = findPerson(child, id);
-                if (found) return found;
+        function findAndModify(node, id, action, data) {
+            if (node.id === id) {
+                if (action === 'child') node.children.push(data);
+                if (action === 'partner') node.partners.push(data);
+                if (action === 'edit') { node.name = data.name; node.gender = data.gender; }
+                return true;
             }
-            return null;
+            for (let child of node.children) {
+                if (findAndModify(child, id, action, data)) return true;
+            }
+            return false;
         }
 
         function saveMember() {
             const name = document.getElementById('member-name').value;
             const gender = document.getElementById('member-gender').value;
             const type = document.getElementById('action-type').value;
-            const id = document.getElementById('parent-id').value;
+            const id = document.getElementById('target-id').value;
 
-            if (!name) return alert("Nama harus diisi!");
+            if (!name) return;
 
-            if (type === 'edit') {
-                const person = findPerson(familyData, id);
-                person.name = name;
-                person.gender = gender;
-            } else if (type === 'child') {
-                const parent = findPerson(familyData, id);
-                parent.children.push({
-                    id: Date.now().toString(),
-                    name: name,
-                    gender: gender,
-                    partners: [],
-                    children: []
-                });
-            } else if (type === 'partner') {
-                const person = findPerson(familyData, id);
-                person.partners.push({ name, gender });
-            }
-
-            saveData();
+            const newData = { id: Date.now().toString(), name, gender, partners: [], children: [] };
+            findAndModify(familyData, id, type, newData);
+            
+            localStorage.setItem('nasabDataV2', JSON.stringify(familyData));
+            renderTree();
             closeModal();
         }
 
         function resetData() {
-            if(confirm("Hapus semua data silsilah?")) {
-                localStorage.removeItem('nasabData');
-                location.reload();
-            }
+            if(confirm("Hapus semua?")) { localStorage.removeItem('nasabDataV2'); location.reload(); }
         }
 
-        // Export Functions
-        async function exportToPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('l', 'mm', 'a4');
-            doc.text("Laporan Silsilah Keluarga", 10, 10);
-            
-            let y = 20;
-            const flatten = (node, depth = 0) => {
-                doc.text(`${" ".repeat(depth * 4)}${node.name} (${node.gender})`, 10, y);
-                y += 7;
-                node.children.forEach(c => flatten(c, depth + 1));
-            };
-            
-            flatten(familyData);
-            doc.save("Pohon_Nasab.pdf");
-        }
-
+        // Fitur Tambahan: Export (Sederhana)
         function exportToExcel() {
-            const dataRows = [];
-            const flatten = (node, parentName = "-") => {
-                dataRows.push({ Nama: node.name, Gender: node.gender, OrangTua: parentName });
-                node.children.forEach(c => flatten(c, node.name));
+            let csv = "ID,Nama,Gender,Tipe\n";
+            const flat = (n) => {
+                csv += `${n.id},${n.name},${n.gender},Utama\n`;
+                n.partners.forEach(p => csv += `-,${p.name},${p.gender},Pasangan\n`);
+                n.children.forEach(flat);
             };
-            flatten(familyData);
-            const ws = XLSX.utils.json_to_sheet(dataRows);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Nasab");
-            XLSX.download(wb, "Silsilah_Keluarga.xlsx");
+            flat(familyData);
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', 'nasab.csv');
+            a.click();
         }
 
-        // Initialize
+        function exportToPDF() {
+            window.print(); // Cara termudah untuk cetak PDF yang responsif dengan layout CSS
+        }
+
         renderTree();
     </script>
 </body>
