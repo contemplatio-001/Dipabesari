@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pohon Nasab Keluarga</title>
+    <title>Pohon Nasab Terstruktur</title>
     <style>
         :root {
             --primary-blue: #0056b3;
@@ -12,246 +12,264 @@
             --text-blue: #003d82;
             --white: #ffffff;
             --danger: #dc3545;
-            --spouse-bg: #ddecff;
+            --spouse-color: #ff8c00;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
             background-color: var(--bg-blue);
             margin: 0; padding: 0;
-            display: flex; flex-direction: column; align-items: center;
         }
 
         /* LOGIN */
         #login-container {
-            margin-top: 15vh; background: var(--white); padding: 30px;
+            margin: 15vh auto; background: var(--white); padding: 30px;
             border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             text-align: center; width: 300px;
         }
 
-        /* APP LAYOUT */
         #app-container { display: none; width: 100%; }
         header {
             background: var(--primary-blue); color: var(--white);
-            padding: 15px 5%; display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;
         }
 
         .tree-wrapper {
             width: 98%; margin: 20px auto; overflow-x: auto;
-            background: var(--white); padding: 30px; border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0, 86, 179, 0.05); min-height: 70vh;
+            background: var(--white); padding: 40px; border-radius: 10px;
+            min-height: 80vh;
         }
 
-        /* TREE STYLE */
+        /* TREE STRUCTURE */
         .tree ul {
             padding-top: 20px; position: relative; display: flex; justify-content: center;
         }
         .tree li {
-            float: left; text-align: center; list-style-type: none;
-            position: relative; padding: 20px 10px 0 10px;
+            text-align: center; list-style-type: none; position: relative;
+            padding: 20px 10px 0 10px;
         }
+
+        /* Garis Penghubung */
         .tree li::before, .tree li::after {
             content: ''; position: absolute; top: 0; right: 50%;
-            border-top: 2px solid #ccc; width: 50%; height: 20px;
+            border-top: 2px solid #aaa; width: 50%; height: 20px;
         }
-        .tree li::after { right: auto; left: 50%; border-left: 2px solid #ccc; }
+        .tree li::after { right: auto; left: 50%; border-left: 2px solid #aaa; }
         .tree li:only-child::after, .tree li:only-child::before { display: none; }
         .tree li:only-child { padding-top: 0; }
         .tree li:first-child::before, .tree li:last-child::after { border: 0 none; }
-        .tree li:last-child::before { border-right: 2px solid #ccc; border-radius: 0 5px 0 0; }
+        .tree li:last-child::before { border-right: 2px solid #aaa; border-radius: 0 5px 0 0; }
         .tree li:first-child::after { border-radius: 5px 0 0 0; }
         .tree ul ul::before {
             content: ''; position: absolute; top: 0; left: 50%;
-            border-left: 2px solid #ccc; width: 0; height: 20px;
+            border-left: 2px solid #aaa; width: 0; height: 20px;
         }
 
-        /* BOX ANGGOTA */
-        .node-card {
+        /* NODE BOXES */
+        .family-unit { display: inline-flex; align-items: flex-start; gap: 5px; }
+        
+        .node {
             border: 2px solid var(--primary-blue);
-            padding: 10px; text-decoration: none;
-            color: var(--text-blue); display: inline-block;
-            border-radius: 8px; background: var(--light-blue);
-            min-width: 120px; transition: 0.3s;
+            padding: 8px 12px; border-radius: 6px;
+            background: var(--light-blue); color: var(--text-blue);
+            min-width: 100px; cursor: pointer; font-weight: bold;
         }
-        .node-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .name-main { font-weight: bold; font-size: 1.1em; display: block; margin-bottom: 5px; }
-        .spouse-list { border-top: 1px solid #bdd7f5; margin-top: 5px; padding-top: 5px; }
-        .name-spouse {
-            display: block; font-size: 0.85em; background: var(--spouse-bg);
-            margin: 2px 0; padding: 2px 5px; border-radius: 4px; font-style: italic;
+
+        .spouse-node {
+            border: 2px dashed var(--spouse-color);
+            background: #fff9f0; color: #a05a00;
+        }
+
+        .couple-group {
+            display: flex; flex-direction: column; align-items: center;
         }
 
         /* MODAL */
         .modal {
             display: none; position: fixed; z-index: 1000;
             left: 0; top: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.6); align-items: center; justify-content: center;
         }
         .modal-content {
-            background: var(--white); padding: 25px; border-radius: 12px;
-            width: 350px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            background: white; padding: 25px; border-radius: 12px;
+            width: 380px; max-height: 90vh; overflow-y: auto;
         }
-        .modal-content input, .modal-content textarea {
-            width: 100%; padding: 10px; margin: 10px 0;
-            border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;
-        }
-        .modal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
         
-        button {
-            padding: 10px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;
-        }
-        .btn-primary { background: var(--primary-blue); color: white; }
-        .btn-danger { background: var(--danger); color: white; }
-        .btn-secondary { background: #6c757d; color: white; }
+        .btn { padding: 8px 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin: 2px; }
+        .btn-blue { background: var(--primary-blue); color: white; }
+        .btn-orange { background: var(--spouse-color); color: white; }
+        .btn-red { background: var(--danger); color: white; }
     </style>
 </head>
 <body>
 
     <div id="login-container">
-        <h2 style="color: var(--primary-blue)">Pohon Nasab</h2>
-        <input type="text" id="username" placeholder="Username" style="width:100%; padding:8px; margin-bottom:10px;">
-        <input type="password" id="password" placeholder="Password" style="width:100%; padding:8px; margin-bottom:10px;">
-        <button class="btn-primary" onclick="login()" style="width:100%">Masuk</button>
+        <h2 style="color:var(--primary-blue)">Login Nasab</h2>
+        <input type="text" id="user" placeholder="Username">
+        <input type="password" id="pass" placeholder="Password">
+        <button class="btn btn-blue" style="width:100%" onclick="checkLogin()">Masuk</button>
     </div>
 
     <div id="app-container">
         <header>
-            <h3 style="margin:0">Silsilah Keluarga</h3>
-            <button onclick="location.reload()" style="background:white; color:var(--primary-blue); font-size:12px;">Logout</button>
+            <strong>Pohon Nasab Keluarga</strong>
+            <button class="btn" onclick="location.reload()">Keluar</button>
         </header>
 
         <div class="tree-wrapper">
-            <div id="tree-render" class="tree"></div>
-            <div id="empty-state" style="display:none; text-align:center; padding:50px;">
-                <button class="btn-primary" onclick="addRoot()">Mulai Buat Pohon Nasab</button>
+            <div id="tree-display" class="tree"></div>
+            <div id="empty-msg" style="display:none; text-align:center;">
+                <button class="btn btn-blue" onclick="initPohon()">Buat Akar Pohon (Leluhur)</button>
             </div>
         </div>
     </div>
 
-    <div id="action-modal" class="modal">
+    <div id="modal" class="modal">
         <div class="modal-content">
-            <h3 id="modal-title" style="margin-top:0">Edit Data</h3>
-            <input type="hidden" id="currentNodeId">
+            <h3 id="m-title" style="margin-top:0">Kelola Anggota</h3>
+            <label>Nama:</label>
+            <input type="text" id="m-name">
+            <input type="hidden" id="m-id">
             
-            <label style="font-size:12px; font-weight:bold;">Nama Anggota:</label>
-            <input type="text" id="nodeName">
-            
-            <label style="font-size:12px; font-weight:bold;">Suami/Istri (Gunakan koma jika > 1):</label>
-            <textarea id="spouseNames" rows="2" placeholder="Contoh: Siti, Aminah"></textarea>
-            
-            <div class="modal-actions">
-                <button class="btn-primary" onclick="saveEdit()">Simpan</button>
-                <button class="btn-primary" style="background:#28a745" onclick="addChild()">+ Anak</button>
-                <button class="btn-danger" onclick="deleteNode()">Hapus</button>
-                <button class="btn-secondary" onclick="closeModal()">Batal</button>
+            <div id="m-actions">
+                <p style="font-weight:bold; font-size:13px; color:var(--primary-blue)">Tindakan:</p>
+                <button class="btn btn-blue" onclick="updateName()">Simpan Nama</button>
+                <button class="btn btn-orange" id="btn-add-spouse" onclick="addSpouse()">+ Tambah Istri/Suami</button>
+                <hr>
+                <button class="btn btn-blue" style="background:#28a745" id="btn-add-child" onclick="addChild()">+ Tambah Anak</button>
+                <button class="btn btn-red" onclick="hapusNode()">Hapus</button>
+                <button class="btn" onclick="closeModal()">Batal</button>
             </div>
         </div>
     </div>
 
     <script>
-        // LOGIN LOGIN
-        function login() {
-            if(document.getElementById('username').value === 'Bismillah' && document.getElementById('password').value === 'Bismillah') {
-                document.getElementById('login-container').style.display = 'none';
-                document.getElementById('app-container').style.display = 'block';
-                renderTree();
-            } else { alert('Salah!'); }
+        function checkLogin() {
+            if(document.getElementById('user').value === 'Bismillah' && document.getElementById('pass').value === 'Bismillah') {
+                document.getElementById('login-container').style.display='none';
+                document.getElementById('app-container').style.display='block';
+                render();
+            } else { alert('Gagal!'); }
         }
 
-        // DATA MANAGEMENT
-        let familyData = JSON.parse(localStorage.getItem('nasabDataV2')) || [];
+        // DATA: [{id, name, parentId, isSpouse, spouseOf}]
+        let db = JSON.parse(localStorage.getItem('nasab_v3')) || [];
 
-        function saveData() {
-            localStorage.setItem('nasabDataV2', JSON.stringify(familyData));
-            renderTree();
+        function save() {
+            localStorage.setItem('nasab_v3', JSON.stringify(db));
+            render();
         }
 
-        function renderTree() {
-            const container = document.getElementById('tree-render');
-            if (familyData.length === 0) {
-                document.getElementById('empty-state').style.display = 'block';
-                container.innerHTML = '';
-                return;
+        function initPohon() {
+            const n = prompt("Nama Leluhur Utama:");
+            if(n) { db.push({id: "n"+Date.now(), name: n, parentId: null, isSpouse: false}); save(); }
+        }
+
+        function render() {
+            const area = document.getElementById('tree-display');
+            if(db.length === 0) { document.getElementById('empty-msg').style.display='block'; area.innerHTML=''; return; }
+            document.getElementById('empty-msg').style.display='none';
+
+            const root = db.find(d => !d.parentId && !d.isSpouse);
+            area.innerHTML = `<ul>${buildTree(root)}</ul>`;
+        }
+
+        function buildTree(node) {
+            // Cari pasangan dari node ini
+            const spouses = db.filter(d => d.isSpouse && d.spouseOf === node.id);
+            
+            let html = `<li><div class="family-unit">`;
+            
+            // Render Orang Utama
+            html += `<div class="node" onclick="showModal('${node.id}')">${node.name}</div>`;
+            
+            // Render Pasangan-pasangan (jika ada) di kolom berbeda
+            spouses.forEach(s => {
+                html += `<div class="couple-group">
+                            <div class="node spouse-node" onclick="showModal('${s.id}')">💍 ${s.name}</div>
+                            ${buildChildrenUI(s.id)} 
+                         </div>`;
+            });
+
+            html += `</div>`;
+            
+            // Anak tanpa pasangan (jika ada data lama atau kasus khusus)
+            const soloChildren = db.filter(d => d.parentId === node.id && !d.isSpouse && !db.find(s => s.id === d.parentSpouseId));
+            if(soloChildren.length > 0) {
+                html += `<ul>${soloChildren.map(c => buildTree(c)).join('')}</ul>`;
             }
-            document.getElementById('empty-state').style.display = 'none';
-            const roots = familyData.filter(d => d.parentId === null);
-            let html = '<ul>';
-            roots.forEach(r => html += buildHTML(r));
-            container.innerHTML = html + '</ul>';
+
+            html += `</li>`;
+            return html;
         }
 
-        function buildHTML(node) {
-            // Memproses string suami/istri menjadi list
-            let spousesHtml = '';
-            if (node.spouses) {
-                const list = node.spouses.split(',').filter(n => n.trim() !== '');
-                if (list.length > 0) {
-                    spousesHtml = '<div class="spouse-list">' + 
-                        list.map(name => `<span class="name-spouse">💍 ${name.trim()}</span>`).join('') + 
-                        '</div>';
-                }
+        function buildChildrenUI(spouseId) {
+            const children = db.filter(d => d.parentSpouseId === spouseId);
+            if(children.length === 0) return '';
+            return `<ul>${children.map(c => buildTree(c)).join('')}</ul>`;
+        }
+
+        function showModal(id) {
+            const n = db.find(d => d.id === id);
+            document.getElementById('m-id').value = id;
+            document.getElementById('m-name').value = n.name;
+            document.getElementById('m-title').innerText = n.isSpouse ? "Edit Pasangan" : "Edit Anggota";
+            
+            // Sembunyikan tombol tambah pasangan jika yang diklik adalah orang yang statusnya sudah pasangan
+            document.getElementById('btn-add-spouse').style.display = n.isSpouse ? 'none' : 'inline-block';
+            document.getElementById('btn-add-child').style.display = n.isSpouse ? 'inline-block' : 'none';
+            
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
+
+        function updateName() {
+            const id = document.getElementById('m-id').value;
+            db.find(d => d.id === id).name = document.getElementById('m-name').value;
+            save(); closeModal();
+        }
+
+        function addSpouse() {
+            const bossId = document.getElementById('m-id').value;
+            const n = prompt("Nama Istri/Suami:");
+            if(n) {
+                db.push({id: "s"+Date.now(), name: n, isSpouse: true, spouseOf: bossId});
+                save(); closeModal();
             }
-
-            const children = familyData.filter(d => d.parentId === node.id);
-            let childHtml = '';
-            if (children.length > 0) {
-                childHtml = '<ul>' + children.map(c => buildHTML(c)).join('') + '</ul>';
-            }
-
-            return `<li>
-                <div class="node-card" onclick="openModal(${node.id})">
-                    <span class="name-main">${node.name}</span>
-                    ${spousesHtml}
-                </div>
-                ${childHtml}
-            </li>`;
-        }
-
-        // ACTIONS
-        function addRoot() {
-            const n = prompt("Nama Leluhur:");
-            if(n) { familyData.push({id: Date.now(), name: n, spouses: '', parentId: null}); saveData(); }
-        }
-
-        function openModal(id) {
-            const node = familyData.find(d => d.id === id);
-            document.getElementById('currentNodeId').value = id;
-            document.getElementById('nodeName').value = node.name;
-            document.getElementById('spouseNames').value = node.spouses || '';
-            document.getElementById('action-modal').style.display = 'flex';
-        }
-
-        function closeModal() { document.getElementById('action-modal').style.display = 'none'; }
-
-        function saveEdit() {
-            const id = parseInt(document.getElementById('currentNodeId').value);
-            const node = familyData.find(d => d.id === id);
-            node.name = document.getElementById('nodeName').value;
-            node.spouses = document.getElementById('spouseNames').value;
-            saveData();
-            closeModal();
         }
 
         function addChild() {
-            const pId = parseInt(document.getElementById('currentNodeId').value);
+            const spouseId = document.getElementById('m-id').value; // Klik dari kotak pasangan
+            const spouseNode = db.find(d => d.id === spouseId);
             const n = prompt("Nama Anak:");
-            if(n) { familyData.push({id: Date.now(), name: n, spouses: '', parentId: pId}); saveData(); closeModal(); }
+            if(n) {
+                db.push({
+                    id: "n"+Date.now(), 
+                    name: n, 
+                    parentId: spouseNode.spouseOf, 
+                    parentSpouseId: spouseId, 
+                    isSpouse: false
+                });
+                save(); closeModal();
+            }
         }
 
-        function deleteNode() {
-            if(confirm("Hapus orang ini dan seluruh keturunannya?")) {
-                const id = parseInt(document.getElementById('currentNodeId').value);
-                const toDelete = [id];
-                const findChildren = (pId) => {
-                    familyData.filter(d => d.parentId === pId).forEach(c => {
-                        toDelete.push(c.id);
-                        findChildren(c.id);
+        function hapusNode() {
+            if(confirm("Hapus data ini? (Anak-anaknya juga akan terhapus)")) {
+                const id = document.getElementById('m-id').value;
+                // Simple recursive delete
+                const toDel = [id];
+                const collect = (pId) => {
+                    db.filter(d => d.parentId === pId || d.parentSpouseId === pId || d.spouseOf === pId).forEach(c => {
+                        toDel.push(c.id);
+                        collect(c.id);
                     });
-                };
-                findChildren(id);
-                familyData = familyData.filter(d => !toDelete.includes(d.id));
-                saveData();
-                closeModal();
+                }
+                collect(id);
+                db = db.filter(d => !toDel.includes(d.id));
+                save(); closeModal();
             }
         }
     </script>
