@@ -2,7 +2,8 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Family Tree Pro Level 4</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Family Tree Pro</title>
 
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -11,86 +12,151 @@
 
 <style>
 body {
-    font-family: Arial;
-    text-align: center;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
     background: #eef2f7;
+}
+
+/* LOGIN */
+#loginPage {
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-box {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    width: 300px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.login-box h2 {
+    text-align: center;
+}
+
+.login-box input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.login-box button {
+    width: 100%;
+    padding: 10px;
+    background: black;
+    color: white;
+    border: none;
+    border-radius: 8px;
+}
+
+/* APP */
+#app {
+    display: none;
+}
+
+header {
+    background: black;
+    color: white;
+    padding: 15px;
+    text-align: center;
 }
 
 #tree {
     width: 100%;
-    height: 550px;
+    height: 60vh;
     background: white;
-    border-radius: 10px;
 }
 
-.node rect {
-    fill: white;
-    stroke: black;
-    stroke-width: 1.5px;
-    rx: 10;
+.controls {
+    text-align: center;
+    padding: 10px;
 }
 
-.node text {
-    font-size: 12px;
-}
-
-img.avatar {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-}
-
-button {
-    margin: 8px;
-    padding: 10px 15px;
+.controls button {
+    margin: 5px;
+    padding: 10px;
     border: none;
     background: black;
     color: white;
     border-radius: 8px;
-    cursor: pointer;
 }
 
-button:hover {
-    background: #333;
+@media (max-width:600px){
+    #tree {
+        height: 50vh;
+    }
 }
 </style>
 </head>
 
 <body>
 
-<h2>Family Tree Pro Level 4</h2>
+<!-- LOGIN -->
+<div id="loginPage">
+    <div class="login-box">
+        <h2>Login</h2>
+        <input id="username" placeholder="Username">
+        <input id="password" type="password" placeholder="Password">
+        <button onclick="login()">Masuk</button>
+        <p id="error" style="color:red;text-align:center;"></p>
+    </div>
+</div>
 
-<div id="tree"></div>
+<!-- APP -->
+<div id="app">
+    <header>
+        <h2>Family Tree Pro</h2>
+    </header>
 
-<div>
-    <button onclick="addChild()">+ Anak</button>
-    <button onclick="addSpouse()">+ Pasangan</button>
-    <button onclick="downloadPDF()">PDF</button>
-    <button onclick="downloadExcel()">Excel</button>
+    <div id="tree"></div>
+
+    <div class="controls">
+        <button onclick="addChild()">+ Anak</button>
+        <button onclick="addSpouse()">+ Pasangan</button>
+        <button onclick="downloadPDF()">PDF</button>
+        <button onclick="downloadExcel()">Excel</button>
+        <button onclick="logout()">Logout</button>
+    </div>
 </div>
 
 <script>
 
+// LOGIN SYSTEM
+function login(){
+    const u = document.getElementById("username").value;
+    const p = document.getElementById("password").value;
+
+    if(u==="contemplatio" && p==="Bismillah"){
+        document.getElementById("loginPage").style.display="none";
+        document.getElementById("app").style.display="block";
+    } else {
+        document.getElementById("error").innerText="Login salah!";
+    }
+}
+
+function logout(){
+    location.reload();
+}
+
 // DATA
 let data = JSON.parse(localStorage.getItem("tree")) || {
-    name: "Ki. Adam",
-    photo: "",
-    spouse: {
-        name: "Ny. Agami",
-        photo: ""
-    },
-    children: []
+    name:"Ki. Adam",
+    photo:"",
+    spouse:{name:"Ny. Agami",photo:""},
+    children:[]
 };
 
 // DRAW TREE
-function drawTree() {
+function drawTree(){
 
     localStorage.setItem("tree", JSON.stringify(data));
+    document.getElementById("tree").innerHTML="";
 
-    document.getElementById("tree").innerHTML = "";
-
-    const width = 900;
-    const height = 500;
+    const width = document.getElementById("tree").clientWidth;
+    const height = document.getElementById("tree").clientHeight;
 
     const svg = d3.select("#tree")
         .append("svg")
@@ -98,144 +164,127 @@ function drawTree() {
         .attr("height", height);
 
     const root = d3.hierarchy(convert(data));
-    const treeLayout = d3.tree().size([width - 100, height - 100]);
+    const treeLayout = d3.tree().size([width-50, height-80]);
 
     treeLayout(root);
 
-    // garis
-    svg.selectAll('line')
+    svg.selectAll("line")
         .data(root.links())
         .enter()
-        .append('line')
-        .attr('x1', d => d.source.x + 50)
-        .attr('y1', d => d.source.y + 50)
-        .attr('x2', d => d.target.x + 50)
-        .attr('y2', d => d.target.y + 50)
-        .attr('stroke', 'black');
+        .append("line")
+        .attr("x1", d=>d.source.x)
+        .attr("y1", d=>d.source.y)
+        .attr("x2", d=>d.target.x)
+        .attr("y2", d=>d.target.y)
+        .attr("stroke","black");
 
-    // node
-    const node = svg.selectAll('g')
+    const node = svg.selectAll("g")
         .data(root.descendants())
         .enter()
-        .append('g')
-        .attr('transform', d => `translate(${d.x + 50},${d.y + 50})`);
+        .append("g")
+        .attr("transform", d=>`translate(${d.x},${d.y})`);
 
-    node.append('rect')
-        .attr('width', 90)
-        .attr('height', 40)
-        .attr('x', -45)
-        .attr('y', -20);
+    node.append("rect")
+        .attr("width",90)
+        .attr("height",40)
+        .attr("x",-45)
+        .attr("y",-20)
+        .attr("rx",10)
+        .attr("fill","white")
+        .attr("stroke","black");
 
-    node.append('text')
-        .attr('text-anchor', 'middle')
-        .attr('dy', 5)
-        .text(d => d.data.name)
-        .on("click", function(event, d) {
-            const newName = prompt("Edit nama:", d.data.name);
-            if(newName){
-                d.data.ref.name = newName;
+    node.append("text")
+        .attr("text-anchor","middle")
+        .attr("dy",5)
+        .text(d=>d.data.name)
+        .on("click",(e,d)=>{
+            const n = prompt("Edit nama:", d.data.name);
+            if(n){
+                d.data.ref.name=n;
                 drawTree();
             }
         });
 
     node.append("image")
-        .attr("xlink:href", d => d.data.photo || "https://via.placeholder.com/30")
-        .attr("x", -15)
-        .attr("y", -35)
-        .attr("width", 30)
-        .attr("height", 30)
-        .on("click", function(event, d){
-            const url = prompt("Masukkan URL foto:");
+        .attr("xlink:href", d=>d.data.photo || "https://via.placeholder.com/30")
+        .attr("x",-15)
+        .attr("y",-35)
+        .attr("width",30)
+        .attr("height",30)
+        .on("click",(e,d)=>{
+            const url = prompt("URL foto:");
             if(url){
-                d.data.ref.photo = url;
+                d.data.ref.photo=url;
                 drawTree();
             }
         });
 }
 
-// KONVERSI DATA (pasangan jadi node)
-function convert(person) {
+// CONVERT
+function convert(p){
+    let children=[];
 
-    let children = [];
-
-    if (person.spouse) {
+    if(p.spouse){
         children.push({
-            name: person.spouse.name,
-            photo: person.spouse.photo,
-            ref: person.spouse
+            name:p.spouse.name,
+            photo:p.spouse.photo,
+            ref:p.spouse
         });
     }
 
-    if (person.children) {
-        person.children.forEach(c => {
+    if(p.children){
+        p.children.forEach(c=>{
             children.push(convert(c));
         });
     }
 
     return {
-        name: person.name,
-        photo: person.photo,
-        ref: person,
-        children: children
+        name:p.name,
+        photo:p.photo,
+        ref:p,
+        children:children
     };
 }
 
-// TAMBAH ANAK
-function addChild() {
-    const name = prompt("Nama anak:");
-    if (!name) return;
-
-    data.children.push({
-        name: name,
-        photo: "",
-        children: []
-    });
-
+// TAMBAH
+function addChild(){
+    const n = prompt("Nama anak:");
+    if(!n) return;
+    data.children.push({name:n,photo:"",children:[]});
     drawTree();
 }
 
-// TAMBAH PASANGAN
-function addSpouse() {
-    const name = prompt("Nama pasangan:");
-    if (!name) return;
-
-    data.spouse = {
-        name: name,
-        photo: ""
-    };
-
+function addSpouse(){
+    const n = prompt("Nama pasangan:");
+    if(!n) return;
+    data.spouse={name:n,photo:""};
     drawTree();
 }
 
 // PDF
-async function downloadPDF() {
+async function downloadPDF(){
     const { jsPDF } = window.jspdf;
     const canvas = await html2canvas(document.getElementById("tree"));
     const img = canvas.toDataURL("image/png");
 
     const pdf = new jsPDF('landscape');
-    pdf.addImage(img, 'PNG', 10, 10, 260, 130);
+    pdf.addImage(img,'PNG',10,10,260,130);
     pdf.save("family-tree.pdf");
 }
 
 // EXCEL
-function flatten(node, arr=[]) {
-    arr.push([node.name]);
-    if(node.spouse) arr.push([node.spouse.name]);
-    if(node.children){
-        node.children.forEach(c => flatten(c, arr));
-    }
+function flatten(n,arr=[]){
+    arr.push([n.name]);
+    if(n.spouse) arr.push([n.spouse.name]);
+    if(n.children) n.children.forEach(c=>flatten(c,arr));
     return arr;
 }
 
-function downloadExcel() {
-    const dataExcel = [["Nama"], ...flatten(data)];
-
-    const ws = XLSX.utils.aoa_to_sheet(dataExcel);
+function downloadExcel(){
+    const ws = XLSX.utils.aoa_to_sheet([["Nama"],...flatten(data)]);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Family");
-
-    XLSX.writeFile(wb, "family-tree.xlsx");
+    XLSX.utils.book_append_sheet(wb,ws,"Family");
+    XLSX.writeFile(wb,"family.xlsx");
 }
 
 // INIT
