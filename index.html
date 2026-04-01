@@ -1,289 +1,252 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Family Tree Login</title>
-
-<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-
-<style>
-body {
-    margin:0;
-    font-family: Arial;
-    background:#e3f2fd;
-}
-
-/* LOGIN */
-#login {
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
-}
-
-.login-box {
-    background:white;
-    padding:30px;
-    border-radius:12px;
-    box-shadow:0 5px 20px rgba(0,0,0,0.2);
-    text-align:center;
-}
-
-input {
-    display:block;
-    margin:10px auto;
-    padding:10px;
-    width:200px;
-}
-
-button {
-    padding:10px;
-    background:#1565c0;
-    color:white;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
-}
-
-/* APP */
-#app {
-    display:none;
-}
-
-header {
-    background:#1565c0;
-    color:white;
-    padding:12px;
-    text-align:center;
-}
-
-#tree-container {
-    width:100%;
-    height:85vh;
-}
-
-svg { width:100%; height:100%; }
-
-line { stroke:#1976d2; stroke-width:2; }
-
-.node rect {
-    fill:white;
-    stroke:#1565c0;
-    stroke-width:2;
-    rx:12;
-}
-
-.name {
-    font-size:14px;
-    font-weight:bold;
-    fill:black;
-    text-anchor:middle;
-}
-
-.birth {
-    font-size:12px;
-    fill:#555;
-    text-anchor:middle;
-}
-
-.menu {
-    position:fixed;
-    background:white;
-    border:2px solid #1565c0;
-    padding:10px;
-    display:none;
-    z-index:9999;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Pohon Nasab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        .tree-container {
+            display: flex;
+            padding: 20px;
+            align-items: flex-start;
+        }
+        .member-card {
+            min-width: 150px;
+            border: 2px solid #3b82f6;
+            background: white;
+            transition: all 0.3s;
+        }
+        .member-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.5);
+        }
+        .connector {
+            height: 2px;
+            background-color: #93c5fd;
+            flex-grow: 1;
+            align-self: center;
+        }
+    </style>
 </head>
+<body class="bg-blue-50 min-h-screen font-sans">
 
-<body>
+    <nav class="bg-blue-700 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold">🌳 Silsilah Keluarga (Nasab)</h1>
+            <div class="space-x-2">
+                <button onclick="exportToPDF()" class="bg-blue-500 hover:bg-blue-400 px-3 py-1 rounded text-sm transition">PDF</button>
+                <button onclick="exportToExcel()" class="bg-green-600 hover:bg-green-500 px-3 py-1 rounded text-sm transition">Excel</button>
+                <button onclick="resetData()" class="bg-red-500 hover:bg-red-400 px-3 py-1 rounded text-sm transition">Reset</button>
+            </div>
+        </div>
+    </nav>
 
-<!-- LOGIN -->
-<div id="login">
-    <div class="login-box">
-        <h3>Login</h3>
-        <input id="user" placeholder="Username">
-        <input id="pass" type="password" placeholder="Password">
-        <button onclick="login()">Masuk</button>
+    <main class="container mx-auto p-4 overflow-x-auto">
+        <div id="tree-root" class="tree-container">
+            </div>
+    </main>
+
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center p-4 z-[100]">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md shadow-2xl">
+            <h2 id="modal-title" class="text-xl font-bold mb-4 text-blue-800">Tambah Anggota</h2>
+            <input type="hidden" id="parent-id">
+            <input type="hidden" id="edit-id">
+            <input type="hidden" id="action-type">
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Nama Lengkap</label>
+                    <input type="text" id="member-name" class="w-full border-blue-300 border p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div class="flex gap-4">
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-gray-700">Gender</label>
+                        <select id="member-gender" class="w-full border-blue-300 border p-2 rounded">
+                            <option value="Laki-laki">Laki-laki</option>
+                            <option value="Perempuan">Perempuan</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end space-x-3">
+                <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">Batal</button>
+                <button onclick="saveMember()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Simpan Data</button>
+            </div>
+        </div>
     </div>
-</div>
 
-<!-- APP -->
-<div id="app">
-<header>🌳 Family Tree</header>
-<div id="tree-container">
-    <svg id="svg"></svg>
-</div>
-</div>
+    <script>
+        // Data Structure & Storage
+        let familyData = JSON.parse(localStorage.getItem('nasabData')) || {
+            id: "1",
+            name: "Kepala Keluarga Pertama",
+            gender: "Laki-laki",
+            partners: [],
+            children: []
+        };
 
-<div id="menu" class="menu">
-    <button onclick="editNode()">Edit</button>
-    <button onclick="addSpouse()">Pasangan</button>
-    <button onclick="addChild()">Anak</button>
-    <button onclick="deleteNode()">Hapus</button>
-    <button onclick="saveData()">Simpan</button>
-</div>
+        function saveData() {
+            localStorage.setItem('nasabData', JSON.stringify(familyData));
+            renderTree();
+        }
 
-<script>
+        // Tree Rendering Logic
+        function renderTree() {
+            const rootContainer = document.getElementById('tree-root');
+            rootContainer.innerHTML = '';
+            rootContainer.appendChild(createNodeElement(familyData));
+        }
 
-// LOGIN
-function login(){
-    const u=document.getElementById("user").value;
-    const p=document.getElementById("pass").value;
+        function createNodeElement(person) {
+            const wrapper = document.createElement('div');
+            wrapper.className = "flex flex-col items-start mr-8";
 
-    if(u==="contemplatio" && p==="Bismillah"){
-        document.getElementById("login").style.display="none";
-        document.getElementById("app").style.display="block";
-        draw();
-    } else {
-        alert("Login salah!");
-    }
-}
+            const card = document.createElement('div');
+            card.className = `member-card p-3 rounded-lg shadow-md border-l-8 ${person.gender === 'Laki-laki' ? 'border-blue-600' : 'border-pink-400'}`;
+            
+            card.innerHTML = `
+                <p class="font-bold text-blue-900">${person.name}</p>
+                <p class="text-xs text-gray-500 mb-2">${person.gender}</p>
+                <div class="grid grid-cols-2 gap-1 text-[10px]">
+                    <button onclick="openModal('edit', '${person.id}')" class="bg-gray-100 p-1 rounded hover:bg-blue-100">Edit</button>
+                    <button onclick="openModal('child', '${person.id}')" class="bg-blue-600 text-white p-1 rounded hover:bg-blue-700">+ Anak</button>
+                    <button onclick="openModal('partner', '${person.id}')" class="bg-indigo-500 text-white p-1 rounded col-span-2 mt-1">+ Pasangan</button>
+                </div>
+            `;
 
-// DATA
-let data = JSON.parse(localStorage.getItem("tree")) || {
-    name:"Ki. Adam",
-    birth:"1980",
-    spouses:[{name:"Ny. Agami",birth:"1985",children:[]}]
-};
+            wrapper.appendChild(card);
 
-let selected=null;
-
-const svg=d3.select("#svg");
-const g=svg.append("g");
-
-svg.call(d3.zoom()
-    .scaleExtent([0.5,2])
-    .on("zoom",e=>g.attr("transform",e.transform))
-);
-
-// BUILD
-function build(p,depth=0,x=800,n=[],l=[]){
-    const sx=300, sy=180;
-
-    n.push({...p,x,y:depth*sy,ref:p});
-
-    if(p.spouses){
-        p.spouses.forEach((sp,i)=>{
-            const px=x+(i+1)*sx;
-
-            n.push({...sp,x:px,y:depth*sy,ref:sp});
-            l.push({x1:x,y1:depth*sy,x2:px,y2:depth*sy});
-
-            if(sp.children){
-                const total=sp.children.length;
-                const start=px-((total-1)/2)*260;
-
-                sp.children.forEach((c,j)=>{
-                    const cx=start+j*260;
-
-                    n.push({...c,x:cx,y:(depth+1)*sy,ref:c});
-                    l.push({x1:px,y1:depth*sy,x2:cx,y2:(depth+1)*sy});
-
-                    build(c,depth+2,cx,n,l);
+            // Render Partners (Pasangan)
+            if (person.partners && person.partners.length > 0) {
+                const partnerContainer = document.createElement('div');
+                partnerContainer.className = "ml-4 mt-2 border-l-2 border-dashed border-blue-300 pl-4";
+                person.partners.forEach(p => {
+                    const pEl = document.createElement('div');
+                    pEl.className = "text-sm text-indigo-700 italic mb-1 bg-white p-1 rounded border border-indigo-100";
+                    pEl.innerText = `❤️ ${p.name}`;
+                    partnerContainer.appendChild(pEl);
                 });
+                wrapper.appendChild(partnerContainer);
             }
-        });
-    }
 
-    return {nodes:n,links:l};
-}
+            // Render Children (Anak - Urutan ke kanan)
+            if (person.children && person.children.length > 0) {
+                const childrenWrapper = document.createElement('div');
+                childrenWrapper.className = "flex mt-6 pt-4 border-t border-blue-200";
+                person.children.forEach(child => {
+                    childrenWrapper.appendChild(createNodeElement(child));
+                });
+                wrapper.appendChild(childrenWrapper);
+            }
 
-// DRAW
-function draw(){
-    g.selectAll("*").remove();
+            return wrapper;
+        }
 
-    const graph=build(data);
+        // CRUD Operations
+        function openModal(type, id) {
+            const modal = document.getElementById('modal');
+            const title = document.getElementById('modal-title');
+            document.getElementById('action-type').value = type;
+            document.getElementById('parent-id').value = id;
+            
+            if(type === 'edit') {
+                const person = findPerson(familyData, id);
+                document.getElementById('member-name').value = person.name;
+                document.getElementById('member-gender').value = person.gender;
+                title.innerText = "Edit Anggota";
+            } else {
+                document.getElementById('member-name').value = '';
+                title.innerText = type === 'child' ? "Tambah Anak" : "Tambah Pasangan";
+            }
+            
+            modal.classList.remove('hidden');
+        }
 
-    g.selectAll("line")
-        .data(graph.links)
-        .enter()
-        .append("line")
-        .attr("x1",d=>d.x1)
-        .attr("y1",d=>d.y1)
-        .attr("x2",d=>d.x2)
-        .attr("y2",d=>d.y2);
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
 
-    const node=g.selectAll("g")
-        .data(graph.nodes)
-        .enter()
-        .append("g")
-        .attr("transform",d=>`translate(${d.x},${d.y})`);
+        function findPerson(node, id) {
+            if (node.id === id) return node;
+            for (let child of node.children) {
+                let found = findPerson(child, id);
+                if (found) return found;
+            }
+            return null;
+        }
 
-    node.append("rect")
-        .attr("width",160)
-        .attr("height",80)
-        .attr("x",-80)
-        .attr("y",-40);
+        function saveMember() {
+            const name = document.getElementById('member-name').value;
+            const gender = document.getElementById('member-gender').value;
+            const type = document.getElementById('action-type').value;
+            const id = document.getElementById('parent-id').value;
 
-    node.append("text")
-        .attr("class","name")
-        .attr("y",5)
-        .text(d=>d.name);
+            if (!name) return alert("Nama harus diisi!");
 
-    node.append("text")
-        .attr("class","birth")
-        .attr("y",25)
-        .text(d=>"Lahir: "+(d.birth||"-"));
+            if (type === 'edit') {
+                const person = findPerson(familyData, id);
+                person.name = name;
+                person.gender = gender;
+            } else if (type === 'child') {
+                const parent = findPerson(familyData, id);
+                parent.children.push({
+                    id: Date.now().toString(),
+                    name: name,
+                    gender: gender,
+                    partners: [],
+                    children: []
+                });
+            } else if (type === 'partner') {
+                const person = findPerson(familyData, id);
+                person.partners.push({ name, gender });
+            }
 
-    node.on("click",(e,d)=>{
-        selected=d.ref;
-        const m=document.getElementById("menu");
-        m.style.left=e.clientX+"px";
-        m.style.top=e.clientY+"px";
-        m.style.display="block";
-        e.stopPropagation();
-    });
+            saveData();
+            closeModal();
+        }
 
-    document.body.onclick=()=>menu.style.display="none";
-}
+        function resetData() {
+            if(confirm("Hapus semua data silsilah?")) {
+                localStorage.removeItem('nasabData');
+                location.reload();
+            }
+        }
 
-// MENU
-function editNode(){
-    const n=prompt("Nama:",selected.name);
-    const b=prompt("Tahun:",selected.birth);
+        // Export Functions
+        async function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('l', 'mm', 'a4');
+            doc.text("Laporan Silsilah Keluarga", 10, 10);
+            
+            let y = 20;
+            const flatten = (node, depth = 0) => {
+                doc.text(`${" ".repeat(depth * 4)}${node.name} (${node.gender})`, 10, y);
+                y += 7;
+                node.children.forEach(c => flatten(c, depth + 1));
+            };
+            
+            flatten(familyData);
+            doc.save("Pohon_Nasab.pdf");
+        }
 
-    if(n) selected.name=n;
-    if(b) selected.birth=b;
+        function exportToExcel() {
+            const dataRows = [];
+            const flatten = (node, parentName = "-") => {
+                dataRows.push({ Nama: node.name, Gender: node.gender, OrangTua: parentName });
+                node.children.forEach(c => flatten(c, node.name));
+            };
+            flatten(familyData);
+            const ws = XLSX.utils.json_to_sheet(dataRows);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Nasab");
+            XLSX.download(wb, "Silsilah_Keluarga.xlsx");
+        }
 
-    draw();
-}
-
-function addSpouse(){
-    if(!selected.spouses) selected.spouses=[];
-    const n=prompt("Nama pasangan:");
-    if(!n) return;
-
-    selected.spouses.push({name:n,birth:"",children:[]});
-    draw();
-}
-
-function addChild(){
-    if(!selected.children){
-        alert("Tambah anak lewat pasangan!");
-        return;
-    }
-
-    const n=prompt("Nama anak:");
-    if(!n) return;
-
-    selected.children.push({name:n,birth:"",spouses:[]});
-    draw();
-}
-
-function deleteNode(){
-    alert("Hapus masih sederhana");
-}
-
-function saveData(){
-    localStorage.setItem("tree",JSON.stringify(data));
-    alert("Tersimpan!");
-}
-
-</script>
-
+        // Initialize
+        renderTree();
+    </script>
 </body>
 </html>
