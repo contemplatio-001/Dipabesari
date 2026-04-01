@@ -44,9 +44,6 @@
             box-sizing: border-box;
             outline: none;
         }
-        .login-box input:focus {
-            border-color: #0056b3;
-        }
         .login-box button {
             background: #0056b3;
             color: white;
@@ -59,15 +56,8 @@
             font-weight: bold;
             transition: 0.3s;
         }
-        .login-box button:hover {
-            background: #004494;
-        }
-        #login-error {
-            color: red;
-            font-size: 12px;
-            display: none;
-            margin-bottom: 10px;
-        }
+        .login-box button:hover { background: #004494; }
+        #login-error { color: red; font-size: 12px; display: none; margin-bottom: 10px; }
 
         /* HALAMAN UTAMA APLIKASI */
         #app-page {
@@ -84,40 +74,30 @@
             align-items: center;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        .header h1 {
-            margin: 0;
-            font-size: 20px;
-        }
+        .header h1 { margin: 0; font-size: 20px; }
         .header button {
-            background: #ff4d4d;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
+            background: #ff4d4d; color: white; border: none;
+            padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;
         }
 
-        /* AREA POHON (Mendukung Scroll jika melebar) */
+        /* AREA POHON (Mendukung Scroll) */
         .tree-container {
-            flex: 1;
-            overflow: auto;
-            padding: 40px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            flex: 1; overflow: auto; padding: 40px;
+            display: flex; justify-content: center; align-items: flex-start;
         }
 
         /* CSS POHON HIERARKI */
         .tree ul {
             padding-top: 20px; position: relative;
-            transition: all 0.5s; display: flex;
+            transition: all 0.5s; display: flex; justify-content: center;
         }
         .tree li {
             float: left; text-align: center;
             list-style-type: none; position: relative;
-            padding: 20px 5px 0 5px; transition: all 0.5s;
+            padding: 20px 10px 0 10px; transition: all 0.5s;
         }
+        
+        /* Garis Penghubung */
         .tree li::before, .tree li::after {
             content: ''; position: absolute; top: 0; right: 50%;
             border-top: 2px solid #0056b3; width: 50%; height: 20px;
@@ -125,73 +105,78 @@
         .tree li::after {
             right: auto; left: 50%; border-left: 2px solid #0056b3;
         }
-        .tree li:only-child::after, .tree li:only-child::before {
-            display: none;
-        }
+        .tree li:only-child::after, .tree li:only-child::before { display: none; }
         .tree li:only-child { padding-top: 0; }
-        .tree li:first-child::before, .tree li:last-child::after {
-            border: 0 none;
-        }
-        .tree li:last-child::before {
-            border-right: 2px solid #0056b3; border-radius: 0 5px 0 0;
-        }
-        .tree li:first-child::after {
-            border-radius: 5px 0 0 0;
-        }
+        .tree li:first-child::before, .tree li:last-child::after { border: 0 none; }
+        .tree li:last-child::before { border-right: 2px solid #0056b3; border-radius: 0 5px 0 0; }
+        .tree li:first-child::after { border-radius: 5px 0 0 0; }
         .tree ul ul::before {
             content: ''; position: absolute; top: 0; left: 50%;
             border-left: 2px solid #0056b3; width: 0; height: 20px;
         }
 
+        /* UNIT KELUARGA (Suami & Istri Berdampingan) */
+        .family-unit {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px; /* Jarak antar kotak suami istri */
+            position: relative;
+            z-index: 1;
+        }
+
         /* KOTAK INDIVIDU */
         .node-box {
             border: 2px solid #0056b3;
-            padding: 10px;
-            display: inline-block;
+            padding: 15px 10px;
             border-radius: 8px;
             background: white;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             text-align: center;
-            min-width: 180px;
-        }
-        .person {
-            font-weight: bold;
-            font-size: 16px;
-            color: #004494;
-            margin-bottom: 5px;
-        }
-        .spouses {
-            font-size: 13px;
-            color: #d81b60;
-            background: #ffe6f0;
-            margin: 2px 0;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
-        .spouses.suami {
-            color: #007bff;
-            background: #e6f2ff;
+            min-width: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
         
+        /* Pewarnaan Khusus Pasangan */
+        .spouse-istri { border-color: #d81b60; }
+        .spouse-istri .person { color: #d81b60; }
+        .spouse-suami { border-color: #007bff; }
+        .spouse-suami .person { color: #007bff; }
+        
+        .person {
+            font-weight: bold; font-size: 16px;
+            color: #004494; margin-bottom: 5px;
+        }
+        .label-role {
+            font-size: 11px;
+            background: #eee;
+            padding: 2px 5px;
+            border-radius: 3px;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+        .spouse-connector {
+            font-size: 20px;
+            color: #0056b3;
+            background: white;
+            padding: 5px;
+            border-radius: 50%;
+            z-index: 2;
+        }
+
         /* TOMBOL AKSI */
         .actions {
-            margin-top: 10px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            justify-content: center;
-            border-top: 1px dashed #b3d9ff;
-            padding-top: 8px;
+            display: flex; flex-wrap: wrap; gap: 4px;
+            justify-content: center; border-top: 1px dashed #ccc;
+            padding-top: 8px; margin-top: auto;
         }
         .actions button {
-            font-size: 11px;
-            cursor: pointer;
-            background: #e6f2ff;
-            border: 1px solid #0056b3;
-            color: #0056b3;
-            border-radius: 4px;
-            padding: 4px 6px;
-            font-weight: bold;
+            font-size: 10px; cursor: pointer;
+            background: #e6f2ff; border: 1px solid #0056b3;
+            color: #0056b3; border-radius: 4px; padding: 4px;
+            font-weight: bold; flex: 1; min-width: 45%;
         }
         .actions button:hover { background: #0056b3; color: white; }
         .actions .btn-del { border-color: #ff4d4d; color: #ff4d4d; background: #ffe6e6; }
@@ -212,7 +197,7 @@
 
     <div id="app-page">
         <div class="header">
-            <h1>Pohon Nasab</h1>
+            <h1>Pohon Nasab Keluarga</h1>
             <button onclick="logout()">Keluar</button>
         </div>
         <div class="tree-container">
@@ -223,11 +208,10 @@
 
     <script>
         // 1. DATA DAN PENYIMPANAN LOKAL
-        // Data dasar jika kosong
         const defaultData = {
             id: 1,
             name: "Leluhur Utama",
-            spouses: [], // Array untuk menyimpan pasangan {name: "Nama", type: "Istri/Suami"}
+            spouses: [], 
             children: []
         };
 
@@ -235,7 +219,7 @@
 
         function saveData() {
             localStorage.setItem('nasabData', JSON.stringify(nasabData));
-            renderTree(); // Update tampilan setelah menyimpan
+            renderTree(); 
         }
 
         // 2. SISTEM LOGIN
@@ -259,7 +243,7 @@
             document.getElementById('password').value = '';
         }
 
-        // 3. FUNGSI UTILITAS UNTUK MENCARI DATA DALAM STRUKTUR POHON
+        // 3. FUNGSI UTILITAS PENCARIAN
         function findNode(node, id) {
             if (node.id === id) return node;
             if (node.children) {
@@ -282,30 +266,13 @@
             return undefined;
         }
 
-        // 4. FUNGSI CRUD (TENGARAH AKSI PADA TOMBOL)
+        // 4. FUNGSI CRUD
+        // --- Untuk Orang Utama ---
         function editName(id) {
             let node = findNode(nasabData, id);
             let newName = prompt("Masukkan nama baru:", node.name);
             if (newName && newName.trim() !== "") {
                 node.name = newName;
-                saveData();
-            }
-        }
-
-        function addSpouse(id, type) {
-            let node = findNode(nasabData, id);
-            let name = prompt(`Masukkan nama ${type}:`);
-            if (name && name.trim() !== "") {
-                if (!node.spouses) node.spouses = [];
-                node.spouses.push({ name: name, type: type });
-                saveData();
-            }
-        }
-
-        function hapusSpouse(nodeId, spouseIndex) {
-            if(confirm("Hapus pasangan ini?")) {
-                let node = findNode(nasabData, nodeId);
-                node.spouses.splice(spouseIndex, 1);
                 saveData();
             }
         }
@@ -316,7 +283,7 @@
             if (childName && childName.trim() !== "") {
                 if (!node.children) node.children = [];
                 node.children.push({
-                    id: Date.now(), // Generate ID unik menggunakan timestamp
+                    id: Date.now(), 
                     name: childName,
                     spouses: [],
                     children: []
@@ -330,7 +297,7 @@
                 alert("Leluhur utama tidak bisa dihapus!");
                 return;
             }
-            if (confirm("Apakah Anda yakin ingin menghapus data ini beserta seluruh keturunannya?")) {
+            if (confirm("Hapus data ini beserta seluruh keturunannya?")) {
                 let parent = findParent(nasabData, id);
                 if (parent) {
                     parent.children = parent.children.filter(child => child.id !== id);
@@ -339,7 +306,36 @@
             }
         }
 
-        // 5. RENDER TAMPILAN POHON (Fungsi Rekursif)
+        // --- Untuk Pasangan (Suami/Istri) ---
+        function addSpouse(id, type) {
+            let node = findNode(nasabData, id);
+            let name = prompt(`Masukkan nama ${type}:`);
+            if (name && name.trim() !== "") {
+                if (!node.spouses) node.spouses = [];
+                node.spouses.push({ name: name, type: type });
+                saveData();
+            }
+        }
+
+        function editSpouse(nodeId, spouseIndex) {
+            let node = findNode(nasabData, nodeId);
+            let spouse = node.spouses[spouseIndex];
+            let newName = prompt(`Edit nama ${spouse.type}:`, spouse.name);
+            if (newName && newName.trim() !== "") {
+                node.spouses[spouseIndex].name = newName;
+                saveData();
+            }
+        }
+
+        function hapusSpouse(nodeId, spouseIndex) {
+            if(confirm("Hapus pasangan ini?")) {
+                let node = findNode(nasabData, nodeId);
+                node.spouses.splice(spouseIndex, 1);
+                saveData();
+            }
+        }
+
+        // 5. RENDER TAMPILAN POHON
         function renderTree() {
             const container = document.getElementById('tree-root');
             container.innerHTML = `<ul>${generateHTML(nasabData)}</ul>`;
@@ -347,30 +343,46 @@
 
         function generateHTML(node) {
             let html = `<li>`;
-            html += `<div class="node-box">
-                        <div class="person">${node.name}</div>`;
             
-            // Render Pasangan (Bisa lebih dari 1)
+            // Bungkus utama untuk Suami & Istri agar berdampingan
+            html += `<div class="family-unit">`;
+
+            // 1. Kotak Orang Utama (Garis Darah / Keturunan Asli)
+            html += `<div class="node-box">
+                        <div class="person">${node.name}</div>
+                        <div class="label-role">Nasab Utama</div>
+                        <div class="actions">
+                            <button onclick="editName(${node.id})">Edit</button>
+                            <button class="btn-del" onclick="deleteNode(${node.id})">Hapus</button>
+                            <button onclick="addChild(${node.id})">+ Anak</button>
+                            <button onclick="addSpouse(${node.id}, 'Istri')">+ Istri</button>
+                            <button onclick="addSpouse(${node.id}, 'Suami')">+ Suami</button>
+                        </div>
+                     </div>`;
+            
+            // 2. Kotak Pasangan (Istri / Suami) di sebelahnya
             if (node.spouses && node.spouses.length > 0) {
                 node.spouses.forEach((spouse, index) => {
-                    let cssClass = spouse.type.toLowerCase() === 'suami' ? 'spouses suami' : 'spouses';
-                    html += `<div class="${cssClass}" onclick="hapusSpouse(${node.id}, ${index})" title="Klik untuk hapus pasangan">
-                                &hearts; ${spouse.type}: ${spouse.name}
+                    let spouseClass = spouse.type.toLowerCase() === 'suami' ? 'spouse-suami' : 'spouse-istri';
+                    
+                    // Ikon penghubung antar pasangan
+                    html += `<div class="spouse-connector">🫶</div>`; 
+                    
+                    // Kotak Pasangan
+                    html += `<div class="node-box ${spouseClass}">
+                                <div class="person">${spouse.name}</div>
+                                <div class="label-role">${spouse.type}</div>
+                                <div class="actions">
+                                    <button onclick="editSpouse(${node.id}, ${index})">Edit</button>
+                                    <button class="btn-del" onclick="hapusSpouse(${node.id}, ${index})">Hapus</button>
+                                </div>
                              </div>`;
                 });
             }
 
-            // Render Menu Tombol
-            html += `<div class="actions">
-                        <button onclick="editName(${node.id})">Edit</button>
-                        <button onclick="addChild(${node.id})">+ Anak</button>
-                        <button onclick="addSpouse(${node.id}, 'Istri')">+ Istri</button>
-                        <button onclick="addSpouse(${node.id}, 'Suami')">+ Suami</button>
-                        <button class="btn-del" onclick="deleteNode(${node.id})">Hapus</button>
-                     </div>
-                   </div>`;
+            html += `</div>`; // Tutup family-unit
 
-            // Render Anak (Rekursif)
+            // 3. Render Anak-anak di bawahnya (Rekursif)
             if (node.children && node.children.length > 0) {
                 html += `<ul>`;
                 for (let child of node.children) {
@@ -383,7 +395,7 @@
             return html;
         }
 
-        // Jalankan render awal meski disembunyikan
+        // Render awal aplikasi
         renderTree();
     </script>
 </body>
