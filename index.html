@@ -3,19 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplikasi Nasab Pro - Struktur Terurut</title>
+    <title>Aplikasi Nasab Pro - Relasi Spesifik</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root { --blue-dark: #1e3a8a; --line-color: #64748b; }
-        body { background-color: #f1f5f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f1f5f9; font-family: 'Inter', sans-serif; }
 
-        /* Struktur Pohon dengan Jarak Luas */
-        .tree-wrapper { display: flex; justify-content: center; padding: 60px; min-width: max-content; }
-        .node-group { display: flex; flex-direction: column; align-items: center; position: relative; margin: 0 40px; }
+        /* Struktur Pohon */
+        .tree-wrapper { display: flex; justify-content: center; padding: 80px; min-width: max-content; }
+        .node-group { display: flex; flex-direction: column; align-items: center; position: relative; margin: 0 50px; }
         
-        /* Baris Anggota & Pasangan */
-        .member-row { display: flex; align-items: center; position: relative; gap: 60px; margin-bottom: 50px; }
+        .member-row { display: flex; align-items: center; position: relative; gap: 60px; margin-bottom: 60px; }
 
         /* Garis Pernikahan (Samping) */
         .member-row::before {
@@ -25,53 +24,56 @@
 
         /* Garis Nasab (Bawah) */
         .vertical-line {
-            width: 3px; height: 50px; background: var(--blue-dark);
-            position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%);
+            width: 3px; height: 60px; background: var(--blue-dark);
+            position: absolute; bottom: -60px; left: 50%; transform: translateX(-50%);
         }
 
-        /* Baris Anak dengan Border Top sebagai penghubung antar saudara */
+        /* Baris Anak */
         .children-row {
             display: flex; justify-content: center; position: relative;
-            padding-top: 50px; border-top: 3px solid var(--blue-dark);
-            gap: 20px; /* Jarak antar anak */
+            padding-top: 60px; border-top: 3px solid var(--blue-dark);
+            gap: 30px;
         }
 
         /* Kartu Desain */
         .card {
-            width: 200px; background: white; border: 2px solid var(--blue-dark);
+            width: 210px; background: white; border: 2px solid var(--blue-dark);
             border-radius: 12px; padding: 15px; z-index: 10; position: relative;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
         .card-menantu { border-color: #94a3b8; border-style: dashed; background: #f8fafc; }
         
-        /* Label Urutan */
-        .order-badge {
-            position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
-            background: var(--blue-dark); color: white; padding: 2px 10px;
-            border-radius: 20px; font-size: 10px; font-weight: bold; white-space: nowrap;
+        /* Badge Keterangan */
+        .info-badge {
+            position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+            background: var(--blue-dark); color: white; padding: 2px 12px;
+            border-radius: 20px; font-size: 9px; font-weight: bold; white-space: nowrap;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         /* Menu Floating */
         .dropdown { display: none; position: absolute; top: 35px; right: 10px; background: white; 
-                    border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); z-index: 100; min-width: 160px; }
+                    border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); z-index: 100; min-width: 170px; }
         .dropdown button { width: 100%; text-align: left; padding: 10px 15px; font-size: 12px; border-bottom: 1px solid #f1f5f9; }
         .dropdown button:hover { background: #eff6ff; color: #1e40af; }
         .show { display: block; }
+
+        @media print { .no-print { display: none; } nav { display: none; } body { background: white; } }
     </style>
 </head>
 <body>
 
     <nav class="bg-blue-900 text-white p-4 fixed top-0 left-0 right-0 z-[200] shadow-xl flex justify-between items-center">
         <div class="flex items-center gap-3">
-            <span class="text-3xl">🌳</span>
+            <span class="text-3xl">👨‍👩‍👧‍👦</span>
             <div>
-                <h1 class="font-black text-lg tracking-tighter">SILSILAH KELUARGA</h1>
-                <p class="text-[10px] text-blue-300 font-medium italic">Manajemen Nasab & Urutan Keturunan</p>
+                <h1 class="font-black text-lg tracking-tighter uppercase">Silsilah Pro</h1>
+                <p class="text-[10px] text-blue-300">Garis Solid: Kandung | Putus-putus: Menantu</p>
             </div>
         </div>
         <div class="flex gap-3">
-            <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-lg text-xs font-bold transition">Eksport Excel</button>
-            <button onclick="window.print()" class="bg-white text-blue-900 px-4 py-2 rounded-lg text-xs font-bold transition">Cetak PDF</button>
+            <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded-lg text-xs font-bold transition">Excel</button>
+            <button onclick="window.print()" class="bg-white text-blue-900 px-4 py-2 rounded-lg text-xs font-bold transition">PDF / Cetak</button>
             <button onclick="resetData()" class="bg-red-500 hover:bg-red-400 px-4 py-2 rounded-lg text-xs font-bold transition">Reset</button>
         </div>
     </nav>
@@ -80,33 +82,37 @@
         <div id="tree-display" class="tree-wrapper"></div>
     </main>
 
-    <div id="modal-form" class="fixed inset-0 bg-slate-900/60 hidden flex items-center justify-center z-[300] backdrop-blur-sm">
+    <div id="modal-form" class="fixed inset-0 bg-slate-900/60 hidden flex items-center justify-center z-[300] backdrop-blur-sm p-4">
         <div class="bg-white p-8 rounded-2xl w-full max-w-sm shadow-2xl">
-            <h3 id="form-title" class="text-xl font-bold mb-6 text-slate-800 border-b pb-2">Tambah Anggota</h3>
+            <h3 id="form-title" class="text-xl font-bold mb-6 text-slate-800 border-b pb-2 text-center">Data Anggota</h3>
             <div class="space-y-4">
                 <div>
-                    <label class="text-xs font-bold text-slate-500 uppercase">Nama Lengkap</label>
+                    <label class="text-[10px] font-bold text-slate-500 uppercase">Nama Lengkap</label>
                     <input type="text" id="in-name" class="w-full border-2 border-slate-200 p-3 rounded-xl focus:border-blue-500 outline-none transition">
                 </div>
                 <div>
-                    <label class="text-xs font-bold text-slate-500 uppercase">Jenis Kelamin</label>
+                    <label class="text-[10px] font-bold text-slate-500 uppercase">Jenis Kelamin</label>
                     <select id="in-gender" class="w-full border-2 border-slate-200 p-3 rounded-xl outline-none">
                         <option value="Laki-laki">Laki-laki</option>
                         <option value="Perempuan">Perempuan</option>
                     </select>
                 </div>
+                <div id="relasi-container" class="hidden">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase">Anak dari Pasangan:</label>
+                    <select id="in-relasi" class="w-full border-2 border-slate-200 p-3 rounded-xl outline-none bg-blue-50">
+                        </select>
+                </div>
             </div>
             <div class="flex justify-end mt-8 gap-4">
                 <button onclick="hideModal()" class="text-slate-400 font-bold hover:text-slate-600">Batal</button>
-                <button onclick="saveData()" class="bg-blue-700 text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-800 shadow-lg shadow-blue-200">Simpan Data</button>
+                <button onclick="saveData()" class="bg-blue-700 text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-800 shadow-lg">Simpan</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Data Initialization
-        let familyDB = JSON.parse(localStorage.getItem('nasab_v4_store')) || {
-            id: "root", name: "Kepala Keluarga", gender: "Laki-laki", partners: [], children: [], order: 1
+        let familyDB = JSON.parse(localStorage.getItem('nasab_v5_store')) || {
+            id: "root", name: "Kepala Keluarga Pertama", gender: "Laki-laki", partners: [], children: []
         };
 
         let currentTarget = { type: '', id: '', pId: '' };
@@ -124,33 +130,29 @@
             const row = document.createElement('div');
             row.className = "member-row";
 
-            // Kartu Utama (Anak Kandung)
-            const mainCard = createCardHtml(person, false, parentNode, childIdx + 1);
-            row.appendChild(mainCard);
+            // Kartu Utama
+            row.appendChild(createCardHtml(person, false, parentNode, childIdx + 1));
 
-            // Kartu Pasangan (Menantu)
+            // Kartu Pasangan
             if (person.partners.length > 0) {
                 person.partners.forEach((partner, pIdx) => {
                     row.appendChild(createCardHtml(partner, true, person.id, pIdx + 1));
                 });
 
-                // Garis Nasab turun dari tengah pasangan
                 if (person.children.length > 0) {
                     const line = document.createElement('div');
                     line.className = "vertical-line";
                     row.appendChild(line);
                 }
             } else if (person.children.length > 0) {
-                // Jika tidak ada pasangan, garis turun dari kartu utama
                 const line = document.createElement('div');
                 line.className = "vertical-line";
-                line.style.left = "100px"; 
+                line.style.left = "105px"; 
                 row.appendChild(line);
             }
 
             group.appendChild(row);
 
-            // Render Cabang Anak
             if (person.children.length > 0) {
                 const childRow = document.createElement('div');
                 childRow.className = "children-row";
@@ -163,41 +165,43 @@
             return group;
         }
 
-        function createCardHtml(p, isPartner, refId, orderNum) {
+        function createCardHtml(p, isPartner, refNode, orderNum) {
             const div = document.createElement('div');
             div.className = `card ${isPartner ? 'card-menantu' : ''}`;
             
-            // Label Urutan
-            let label = "";
-            if (!isPartner && refId) {
-                label = `<div class="order-badge">Anak ke-${orderNum}</div>`;
+            let labelText = "";
+            if (!isPartner && refNode) {
+                // Mencari urutan anak spesifik dari orang tua ke-X
+                const partnerText = p.fromPartnerIdx ? ` (Pasangan ke-${p.fromPartnerIdx})` : "";
+                labelText = `Anak ke-${orderNum}${partnerText}`;
             } else if (isPartner) {
-                label = `<div class="order-badge bg-slate-500">Pasangan ke-${orderNum}</div>`;
+                labelText = `Pasangan ke-${orderNum}`;
             }
 
+            const badge = labelText ? `<div class="info-badge">${labelText}</div>` : "";
+
             div.innerHTML = `
-                ${label}
+                ${badge}
                 <div class="flex justify-between items-start mb-2">
                     <span class="text-[9px] font-black uppercase ${isPartner ? 'text-slate-400' : 'text-blue-700'}">
                         ${isPartner ? 'Menantu' : 'Kandung'}
                     </span>
-                    <button onclick="toggleDropdown(event)" class="text-slate-400 hover:text-blue-600 font-bold">⋮</button>
-                    <div class="dropdown">
-                        <button onclick="openForm('edit', '${p.id}', '${isPartner ? refId : ''}')">✏️ Edit Profil</button>
+                    <button onclick="toggleDropdown(event)" class="text-slate-400 hover:text-blue-600 font-bold px-1">⋮</button>
+                    <div class="dropdown shadow-2xl">
+                        <button onclick="openForm('edit', '${p.id}', '${isPartner ? refNode : ''}')">✏️ Edit Profil</button>
                         ${!isPartner ? `
                             <button onclick="openForm('child', '${p.id}')">👶 Tambah Anak</button>
                             <button onclick="openForm('partner', '${p.id}')">💍 Tambah Pasangan</button>
                         ` : ''}
-                        <button class="text-red-600" onclick="confirmDelete('${p.id}', ${isPartner}, '${refId}')">🗑️ Hapus Data</button>
+                        <button class="text-red-600" onclick="confirmDelete('${p.id}', ${isPartner}, '${refNode}')">🗑️ Hapus</button>
                     </div>
                 </div>
-                <div class="font-bold text-slate-800 text-sm leading-tight mb-1">${p.name}</div>
+                <div class="font-bold text-slate-800 text-sm leading-tight mb-1 truncate" title="${p.name}">${p.name}</div>
                 <div class="text-[10px] text-slate-500">${p.gender}</div>
             `;
             return div;
         }
 
-        // --- Logic UI ---
         function toggleDropdown(e) {
             e.stopPropagation();
             document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('show'));
@@ -208,14 +212,33 @@
 
         function openForm(type, id, pId = '') {
             currentTarget = { type, id, pId };
-            document.getElementById('modal-form').classList.remove('hidden');
+            const modal = document.getElementById('modal-form');
+            const relasiContainer = document.getElementById('relasi-container');
+            const relasiSelect = document.getElementById('in-relasi');
+            
+            modal.classList.remove('hidden');
+            relasiContainer.classList.add('hidden');
+            relasiSelect.innerHTML = '';
+
+            if (type === 'child') {
+                const parent = findById(familyDB, id);
+                if (parent.partners.length > 0) {
+                    relasiContainer.classList.remove('hidden');
+                    parent.partners.forEach((partner, idx) => {
+                        const opt = document.createElement('option');
+                        opt.value = idx + 1;
+                        opt.text = `Pasangan ke-${idx + 1} (${partner.name})`;
+                        relasiSelect.add(opt);
+                    });
+                }
+            }
+
             if (type === 'edit') {
                 const node = findById(familyDB, id, pId);
                 document.getElementById('in-name').value = node.name;
-                document.getElementById('form-title').innerText = "Edit Anggota";
+                document.getElementById('in-gender').value = node.gender;
             } else {
                 document.getElementById('in-name').value = '';
-                document.getElementById('form-title').innerText = type === 'child' ? "Tambah Anak" : "Tambah Pasangan";
             }
         }
 
@@ -224,7 +247,8 @@
         function saveData() {
             const name = document.getElementById('in-name').value;
             const gender = document.getElementById('in-gender').value;
-            if (!name) return alert("Nama wajib diisi!");
+            const fromPartnerIdx = document.getElementById('in-relasi').value;
+            if (!name) return;
 
             const { type, id, pId } = currentTarget;
 
@@ -233,13 +257,19 @@
                 node.name = name; node.gender = gender;
             } else if (type === 'child') {
                 const parent = findById(familyDB, id);
-                parent.children.push({ id: "id_"+Date.now(), name, gender, partners: [], children: [] });
+                parent.children.push({ 
+                    id: "id_"+Date.now(), 
+                    name, gender, 
+                    partners: [], children: [],
+                    fromPartnerIdx: fromPartnerIdx || null 
+                });
             } else {
                 const parent = findById(familyDB, id);
                 parent.partners.push({ id: "id_"+Date.now(), name, gender });
             }
 
-            sync(); hideModal();
+            localStorage.setItem('nasab_v5_store', JSON.stringify(familyDB));
+            initRender(); hideModal();
         }
 
         function findById(root, id, pId = '') {
@@ -256,7 +286,7 @@
         }
 
         function confirmDelete(id, isPartner, pId) {
-            if (id === 'root') return alert("Akar silsilah tidak bisa dihapus.");
+            if (id === 'root') return alert("Akar tidak bisa dihapus.");
             if (confirm("Hapus data ini beserta seluruh keturunannya?")) {
                 if (isPartner) {
                     const parent = findById(familyDB, pId);
@@ -264,7 +294,8 @@
                 } else {
                     deleteRecursive(familyDB, id);
                 }
-                sync();
+                localStorage.setItem('nasab_v5_store', JSON.stringify(familyDB));
+                initRender();
             }
         }
 
@@ -273,33 +304,25 @@
             root.children.forEach(c => deleteRecursive(c, id));
         }
 
-        function sync() {
-            localStorage.setItem('nasab_v4_store', JSON.stringify(familyDB));
-            initRender();
-        }
-
         function resetData() {
-            if (confirm("Hapus silsilah secara total?")) {
-                localStorage.removeItem('nasab_v4_store');
-                location.reload();
-            }
+            if (confirm("Hapus semua?")) { localStorage.removeItem('nasab_v5_store'); location.reload(); }
         }
 
         function exportToExcel() {
             let list = [];
             const flat = (n, p = "-") => {
-                list.push({ Nama: n.name, Gender: n.gender, Status: "Kandung", Hubungan: "Anak dari "+p });
+                const rel = n.fromPartnerIdx ? ` (dari psng ke-${n.fromPartnerIdx})` : "";
+                list.push({ Nama: n.name, Gender: n.gender, Status: "Kandung", Hubungan: "Anak dari "+p+rel });
                 n.partners.forEach((pt, i) => list.push({ Nama: pt.name, Gender: pt.gender, Status: "Menantu", Hubungan: "Pasangan ke-"+(i+1)+" dari "+n.name }));
                 n.children.forEach(c => flat(c, n.name));
             };
             flat(familyDB);
             const ws = XLSX.utils.json_to_sheet(list);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Database Nasab");
-            XLSX.writeFile(wb, "Silsilah_Keluarga_Terurut.xlsx");
+            XLSX.utils.book_append_sheet(wb, ws, "Nasab");
+            XLSX.writeFile(wb, "Silsilah_Nasab_Lengkap.xlsx");
         }
 
-        // Run
         initRender();
     </script>
 </body>
