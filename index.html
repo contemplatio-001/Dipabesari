@@ -1,81 +1,202 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Family Tree Login</title>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+
+<style>
+body {
+    margin:0;
+    font-family: Arial;
+    background:#e3f2fd;
+}
+
+/* LOGIN */
+#login {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.login-box {
+    background:white;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 5px 20px rgba(0,0,0,0.2);
+    text-align:center;
+}
+
+input {
+    display:block;
+    margin:10px auto;
+    padding:10px;
+    width:200px;
+}
+
+button {
+    padding:10px;
+    background:#1565c0;
+    color:white;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+/* APP */
+#app {
+    display:none;
+}
+
+header {
+    background:#1565c0;
+    color:white;
+    padding:12px;
+    text-align:center;
+}
+
+#tree-container {
+    width:100%;
+    height:85vh;
+}
+
+svg { width:100%; height:100%; }
+
+line { stroke:#1976d2; stroke-width:2; }
+
+.node rect {
+    fill:white;
+    stroke:#1565c0;
+    stroke-width:2;
+    rx:12;
+}
+
+.name {
+    font-size:14px;
+    font-weight:bold;
+    fill:black;
+    text-anchor:middle;
+}
+
+.birth {
+    font-size:12px;
+    fill:#555;
+    text-anchor:middle;
+}
+
+.menu {
+    position:fixed;
+    background:white;
+    border:2px solid #1565c0;
+    padding:10px;
+    display:none;
+    z-index:9999;
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div id="login">
+    <div class="login-box">
+        <h3>Login</h3>
+        <input id="user" placeholder="Username">
+        <input id="pass" type="password" placeholder="Password">
+        <button onclick="login()">Masuk</button>
+    </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+<header>🌳 Family Tree</header>
+<div id="tree-container">
+    <svg id="svg"></svg>
+</div>
+</div>
+
+<div id="menu" class="menu">
+    <button onclick="editNode()">Edit</button>
+    <button onclick="addSpouse()">Pasangan</button>
+    <button onclick="addChild()">Anak</button>
+    <button onclick="deleteNode()">Hapus</button>
+    <button onclick="saveData()">Simpan</button>
+</div>
+
 <script>
+
+// LOGIN
+function login(){
+    const u=document.getElementById("user").value;
+    const p=document.getElementById("pass").value;
+
+    if(u==="contemplatio" && p==="Bismillah"){
+        document.getElementById("login").style.display="none";
+        document.getElementById("app").style.display="block";
+        draw();
+    } else {
+        alert("Login salah!");
+    }
+}
 
 // DATA
 let data = JSON.parse(localStorage.getItem("tree")) || {
-    name: "Ki. Adam",
-    gender: "M",
-    spouses: [{ name: "Ny. Agami", gender: "F", children: [] }]
+    name:"Ki. Adam",
+    birth:"1980",
+    spouses:[{name:"Ny. Agami",birth:"1985",children:[]}]
 };
 
-let selected = null;
+let selected=null;
 
-// ZOOM
-const svg = d3.select("#svg");
-const g = svg.append("g");
+const svg=d3.select("#svg");
+const g=svg.append("g");
 
 svg.call(d3.zoom()
-    .scaleExtent([0.5, 2])
-    .on("zoom", (event) => {
-        g.attr("transform", event.transform);
-    })
+    .scaleExtent([0.5,2])
+    .on("zoom",e=>g.attr("transform",e.transform))
 );
 
-// BUILD (🔥 FIX ANTI TUMPUK)
-function build(person, depth=0, x=800, nodes=[], links=[]){
+// BUILD
+function build(p,depth=0,x=800,n=[],l=[]){
+    const sx=300, sy=180;
 
-    const sx = 300; // jarak pasangan diperlebar
-    const sy = 150;
+    n.push({...p,x,y:depth*sy,ref:p});
 
-    nodes.push({name: person.name, x, y: depth*sy, ref: person});
+    if(p.spouses){
+        p.spouses.forEach((sp,i)=>{
+            const px=x+(i+1)*sx;
 
-    if(person.spouses){
-        person.spouses.forEach((sp,i)=>{
-
-            const px = person.gender==="M"
-                ? x + (i+1)*sx
-                : x - (i+1)*sx;
-
-            nodes.push({name: sp.name, x:px, y:depth*sy, ref: sp});
-
-            // garis pasangan
-            links.push({x1:x,y1:depth*sy,x2:px,y2:depth*sy});
+            n.push({...sp,x:px,y:depth*sy,ref:sp});
+            l.push({x1:x,y1:depth*sy,x2:px,y2:depth*sy});
 
             if(sp.children){
-
-                const total = sp.children.length;
-
-                // 🔥 posisi awal supaya rata tengah
-                const startX = px - (total - 1) * 120;
+                const total=sp.children.length;
+                const start=px-((total-1)/2)*260;
 
                 sp.children.forEach((c,j)=>{
+                    const cx=start+j*260;
 
-                    const cx = startX + j * 240; // 🔥 jarak anak diperlebar
+                    n.push({...c,x:cx,y:(depth+1)*sy,ref:c});
+                    l.push({x1:px,y1:depth*sy,x2:cx,y2:(depth+1)*sy});
 
-                    nodes.push({name:c.name,x:cx,y:(depth+1)*sy,ref:c});
-
-                    links.push({
-                        x1:px,
-                        y1:depth*sy,
-                        x2:cx,
-                        y2:(depth+1)*sy
-                    });
-
-                    // rekursif
-                    build(c, depth+2, cx, nodes, links);
+                    build(c,depth+2,cx,n,l);
                 });
             }
         });
     }
 
-    return {nodes,links};
+    return {nodes:n,links:l};
 }
 
 // DRAW
 function draw(){
-
     g.selectAll("*").remove();
 
-    const graph = build(data);
+    const graph=build(data);
 
     g.selectAll("line")
         .data(graph.links)
@@ -86,87 +207,83 @@ function draw(){
         .attr("x2",d=>d.x2)
         .attr("y2",d=>d.y2);
 
-    const node = g.selectAll("g.node")
+    const node=g.selectAll("g")
         .data(graph.nodes)
         .enter()
         .append("g")
-        .attr("class","node")
         .attr("transform",d=>`translate(${d.x},${d.y})`);
 
     node.append("rect")
-        .attr("width",140)
-        .attr("height",60)
-        .attr("x",-70)
-        .attr("y",-30);
+        .attr("width",160)
+        .attr("height",80)
+        .attr("x",-80)
+        .attr("y",-40);
 
     node.append("text")
-        .attr("text-anchor","middle")
-        .attr("dominant-baseline","middle")
+        .attr("class","name")
+        .attr("y",5)
         .text(d=>d.name);
 
+    node.append("text")
+        .attr("class","birth")
+        .attr("y",25)
+        .text(d=>"Lahir: "+(d.birth||"-"));
+
     node.on("click",(e,d)=>{
-        selected = d.ref;
-
-        const menu = document.getElementById("menu");
-        menu.style.left = e.clientX + "px";
-        menu.style.top = e.clientY + "px";
-        menu.style.display = "block";
-
+        selected=d.ref;
+        const m=document.getElementById("menu");
+        m.style.left=e.clientX+"px";
+        m.style.top=e.clientY+"px";
+        m.style.display="block";
         e.stopPropagation();
     });
 
-    document.body.onclick = ()=>{
-        document.getElementById("menu").style.display="none";
-    }
+    document.body.onclick=()=>menu.style.display="none";
 }
 
-// MENU (tetap sama)
+// MENU
 function editNode(){
-    const n = prompt("Nama:");
-    if(n){ selected.name=n; draw(); }
-}
+    const n=prompt("Nama:",selected.name);
+    const b=prompt("Tahun:",selected.birth);
 
-function addHusband(){
-    if(!selected.spouses) selected.spouses=[];
-    const n = prompt("Nama suami:");
-    if(!n) return;
+    if(n) selected.name=n;
+    if(b) selected.birth=b;
 
-    selected.spouses.push({name:n, gender:"M", children:[]});
     draw();
 }
 
-function addWife(){
+function addSpouse(){
     if(!selected.spouses) selected.spouses=[];
-    const n = prompt("Nama istri:");
+    const n=prompt("Nama pasangan:");
     if(!n) return;
 
-    selected.spouses.push({name:n, gender:"F", children:[]});
+    selected.spouses.push({name:n,birth:"",children:[]});
     draw();
 }
 
 function addChild(){
     if(!selected.children){
-        alert("Tambah anak melalui pasangan!");
+        alert("Tambah anak lewat pasangan!");
         return;
     }
 
-    const n = prompt("Nama anak:");
+    const n=prompt("Nama anak:");
     if(!n) return;
 
-    selected.children.push({name:n, spouses:[]});
+    selected.children.push({name:n,birth:"",spouses:[]});
     draw();
 }
 
 function deleteNode(){
-    alert("Fitur hapus akan disempurnakan");
+    alert("Hapus masih sederhana");
 }
 
 function saveData(){
-    localStorage.setItem("tree", JSON.stringify(data));
-    alert("Data tersimpan!");
+    localStorage.setItem("tree",JSON.stringify(data));
+    alert("Tersimpan!");
 }
 
-// INIT
-draw();
-
 </script>
+
+</body>
+</html>
