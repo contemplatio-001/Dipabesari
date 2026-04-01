@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pohon Keluarga Cloud GitHub</title>
+    <title>Silsilah Keluarga Cloud - Versi Poligami/Poliandri</title>
     <script src="https://unpkg.com/@panzoom/panzoom/dist/panzoom.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
@@ -11,7 +11,6 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: var(--bg); color: #333; overflow: hidden; }
 
-        /* Status Cloud */
         #cloud-status {
             position: fixed; bottom: 20px; right: 20px; padding: 10px 20px;
             background: #2c3e50; color: white; border-radius: 30px;
@@ -23,75 +22,75 @@
         .login-box { background: #fff; padding: 40px; border-radius: 10px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
         .login-box h2 { margin-bottom: 20px; color: var(--primary); }
         .login-box input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; }
-        .login-box button { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; transition: 0.2s;}
-        .login-box button:disabled { background: #95a5a6; cursor: not-allowed; }
+        .login-box button { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; }
 
         #app-screen { display: none; width: 100vw; height: 100vh; display: flex; }
         
         /* SIDEBAR */
-        .sidebar { width: 250px; background: var(--primary); color: white; display: flex; flex-direction: column; z-index: 1000; transition: transform 0.3s ease-in-out; }
+        .sidebar { width: 260px; background: var(--primary); color: white; display: flex; flex-direction: column; z-index: 1000; transition: 0.3s; }
         .sidebar-header { padding: 20px; text-align: center; border-bottom: 1px solid #34495e; }
-        .user-badge { background: #e67e22; font-size: 0.8rem; padding: 3px 8px; border-radius: 12px; display: inline-block; margin-top: 5px;}
-        .sidebar-menu { list-style: none; padding: 20px 0; flex-grow: 1;}
-        .sidebar-menu li { padding: 15px 20px; cursor: pointer; border-left: 4px solid transparent; transition: 0.2s; display: flex; align-items: center; gap: 10px;}
-        .sidebar-menu li:hover, .sidebar-menu li.active { background: var(--secondary); border-left-color: var(--accent); }
-        .sidebar-menu li.logout { margin-top: auto; border-top: 1px solid #34495e; color: #e74c3c; }
+        .user-badge { background: #e67e22; font-size: 0.75rem; padding: 3px 8px; border-radius: 12px; display: inline-block; margin-top: 5px;}
+        .sidebar-menu { list-style: none; padding: 15px 0; flex-grow: 1;}
+        .sidebar-menu li { padding: 12px 20px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 10px; font-size: 0.9rem;}
+        .sidebar-menu li:hover, .sidebar-menu li.active { background: var(--secondary); border-left: 4px solid var(--accent); }
+        .sidebar-menu li.logout { margin-top: auto; color: #e74c3c; border-top: 1px solid #34495e; }
 
         .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); z-index: 999; }
 
         .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; position: relative;}
         
-        .toolbar { background: #fff; padding: 10px 20px; display: flex; gap: 10px; align-items: center; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.05); flex-wrap: wrap;}
-        .btn-hamburger { display: none; background: transparent; border: none; font-size: 1.5rem; color: #2c3e50; cursor: pointer; padding: 0 10px; }
-        .btn-tool { padding: 8px 15px; border: none; border-radius: 6px; font-size: 0.9rem; cursor: pointer; color: white; font-weight: bold; }
-        .btn-pdf { background: #e74c3c; } .btn-excel { background: #27ae60; }
+        .toolbar { background: #fff; padding: 10px 15px; display: flex; gap: 8px; align-items: center; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.05); flex-wrap: wrap;}
+        .btn-hamburger { display: none; background: transparent; border: none; font-size: 1.5rem; cursor: pointer; }
+        .btn-tool { padding: 7px 12px; border: none; border-radius: 6px; font-size: 0.8rem; cursor: pointer; color: white; font-weight: bold; }
 
-        /* TREE STRUCTURE */
-        .tree-area { flex-grow: 1; position: relative; overflow: hidden; background: #eef2f5; cursor: grab;}
-        .tree-area:active { cursor: grabbing; }
-        .tree { display: inline-flex; padding: 50px; transform-origin: top center; min-width: max-content; }
-        .tree ul { padding-top: 20px; position: relative; display: flex; padding-left: 0; margin: 0; justify-content: center;}
-        .tree li { text-align: center; list-style-type: none; position: relative; padding: 20px 5px 0 5px; display: flex; flex-direction: column; align-items: center; }
-        .tree li::before, .tree li::after { content: ''; position: absolute; top: 0; right: 50%; border-top: 2px solid #95a5a6; width: 50%; height: 20px; }
-        .tree li::after { right: auto; left: 50%; border-left: 2px solid #95a5a6; }
+        /* TREE UI */
+        .tree-area { flex-grow: 1; overflow: hidden; background: #eef2f5; cursor: grab;}
+        .tree { display: inline-flex; padding: 50px; transform-origin: top center; }
+        .tree ul { padding-top: 20px; position: relative; display: flex; justify-content: center;}
+        .tree li { text-align: center; list-style-type: none; position: relative; padding: 20px 5px 0 5px; }
+        .tree li::before, .tree li::after { content: ''; position: absolute; top: 0; right: 50%; border-top: 2px solid #bdc3c7; width: 50%; height: 20px; }
+        .tree li::after { right: auto; left: 50%; border-left: 2px solid #bdc3c7; }
         .tree li:only-child::after, .tree li:only-child::before { display: none; }
         .tree li:only-child { padding-top: 0; }
         .tree li:first-child::before, .tree li:last-child::after { border: 0 none; }
-        .tree li:last-child::before { border-right: 2px solid #95a5a6; border-radius: 0 5px 0 0; }
+        .tree li:last-child::before { border-right: 2px solid #bdc3c7; border-radius: 0 5px 0 0; }
         .tree li:first-child::after { border-radius: 5px 0 0 0; }
-        .tree ul ul::before { content: ''; position: absolute; top: 0; left: 50%; border-left: 2px solid #95a5a6; width: 0; height: 20px; }
+        .tree ul ul::before { content: ''; position: absolute; top: 0; left: 50%; border-left: 2px solid #bdc3c7; height: 20px; }
 
-        /* CARDS */
-        .node-card { background: #ffffff; border: 2px solid #bdc3c7; padding: 12px; border-radius: 12px; min-width: 170px; max-width: 220px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: relative; z-index: 1; }
-        .generation-badge { background: #f1c40f; color: #8e44ad; font-size: 0.7rem; font-weight: bold; padding: 2px 8px; border-radius: 10px; margin-bottom: 8px; display: inline-block; }
-        .name { font-weight: bold; color: #2c3e50; font-size: 1rem; margin-bottom: 5px;}
-        .partner { font-size: 0.85rem; color: #d35400; margin-bottom: 8px; background: #ffeaa7; border-radius: 6px; padding: 4px 8px; display: inline-block;}
-        .description-box { font-size: 0.75rem; color: #555; background: #f8f9fa; border-top: 1px dashed #ccc; padding: 8px; margin-bottom: 12px; border-radius: 4px; text-align: left; max-height: 80px; overflow-y: auto; }
-        .actions { display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; }
-        .btn { padding: 6px; border: none; border-radius: 6px; font-size: 0.8rem; cursor: pointer; color: white; font-weight: 600; }
-        .btn-add { background: #2ecc71; flex: 1; } .btn-edit { background: #3498db; } .btn-delete { background: #e74c3c; }
+        /* CARD STYLING */
+        .node-card { background: #fff; border: 2px solid #bdc3c7; padding: 12px; border-radius: 12px; min-width: 200px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .gen-label { font-size: 0.65rem; font-weight: bold; text-transform: uppercase; color: #7f8c8d; margin-bottom: 5px; }
+        .name { font-weight: bold; color: #2c3e50; font-size: 1rem; margin-bottom: 8px; }
+        
+        /* Partner Tags */
+        .partners-container { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+        .partner-tag { font-size: 0.75rem; padding: 4px 8px; border-radius: 4px; display: flex; align-items: center; justify-content: space-between; }
+        .tag-suami { background: #ebf5ff; color: #2980b9; border: 1px solid #3498db; }
+        .tag-istri { background: #fff0f6; color: #d63384; border: 1px solid #ff85c0; }
+        .btn-del-p { cursor: pointer; font-weight: bold; margin-left: 5px; color: #e74c3c; }
 
-        /* PAGES & MODALS */
-        #users-page { display: none; padding: 20px; overflow-y: auto; height: 100%; background: white; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-        th { background-color: var(--primary); color: white; }
-        .github-settings { background: #fdf2e9; padding: 15px; border-left: 4px solid #e67e22; margin-bottom: 20px; border-radius: 4px;}
+        .bio { font-size: 0.7rem; color: #666; background: #f9f9f9; padding: 6px; border-radius: 4px; margin-bottom: 10px; text-align: left; max-height: 50px; overflow-y: auto; border-left: 3px solid #ddd;}
 
-        .modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; padding: 15px; }
-        .modal-content { background: #fff; padding: 25px; border-radius: 12px; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto;}
-        .form-group { margin-bottom: 15px; text-align: left; }
-        .form-group label { display: block; margin-bottom: 6px; font-size: 0.9rem; font-weight: bold;}
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
-        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;}
-        .btn-save { background: #2ecc71; color: white; padding: 10px 20px; border:none; border-radius: 6px; cursor: pointer;}
-        .btn-cancel { background: #95a5a6; color: white; padding: 10px 20px; border:none; border-radius: 6px; cursor: pointer;}
+        /* Action Buttons */
+        .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+        .btn-act { border: none; padding: 5px; border-radius: 4px; font-size: 0.7rem; cursor: pointer; color: white; font-weight: bold; }
+        .b-anak { background: #2ecc71; grid-column: span 2; }
+        .b-suami { background: #3498db; }
+        .b-istri { background: #e67e22; }
+        .b-edit { background: #95a5a6; }
+        .b-del { background: #e74c3c; }
+
+        #users-page { display: none; padding: 20px; background: white; height: 100%; overflow-y: auto; }
+        .modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; }
+        .modal-content { background: #fff; padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
 
         @media (max-width: 768px) {
-            .sidebar { position: fixed; top: 0; left: 0; height: 100vh; transform: translateX(-100%); }
-            .sidebar.open { transform: translateX(0); }
+            .sidebar { position: fixed; left: -260px; height: 100vh; }
+            .sidebar.open { left: 0; }
             .btn-hamburger { display: block; }
-            .btn-tool { padding: 6px 10px; font-size: 0.8rem;}
         }
     </style>
 </head>
@@ -99,27 +98,30 @@
 
     <div id="cloud-status">☁️ Menyinkronkan...</div>
 
+    <!-- LOGIN SCREEN -->
     <div id="login-screen">
         <div class="login-box">
-            <h2>🌳 Pohon Keluarga</h2>
+            <h2>🌳 Silsilah Keluarga</h2>
             <input type="text" id="login-user" placeholder="Username">
             <input type="password" id="login-pass" placeholder="Password">
-            <button id="login-btn" onclick="doLogin()">Masuk</button>
-            <p id="login-status-text" style="margin-top: 15px; font-size: 0.8rem; color: #e67e22; font-weight: bold;">⏳ Menghubungkan ke Server...</p>
+            <button onclick="doLogin()">Masuk</button>
+            <p id="login-status-text" style="margin-top:15px; font-size:0.75rem; color:#e67e22;">⏳ Menghubungkan ke Server...</p>
         </div>
     </div>
 
+    <!-- MAIN APP -->
     <div id="app-screen">
         <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+        
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h3>Silsilah Keluarga</h3>
+                <h3>Keluarga Besar</h3>
                 <span class="user-badge" id="display-role">...</span>
-                <div style="font-size: 0.8rem; margin-top: 5px;">Halo, <b id="display-user">...</b>!</div>
+                <div style="font-size: 0.8rem; margin-top:5px;">Halo, <b id="display-user">...</b>!</div>
             </div>
             <ul class="sidebar-menu">
                 <li class="active" onclick="switchPage('tree')">🌳 Pohon Keluarga</li>
-                <li onclick="resetZoom()">🔍 Reset View</li>
+                <li onclick="resetZoom()">🔍 Fokus Tengah</li>
                 <li id="menu-users" onclick="switchPage('users')">⚙️ Pengaturan & User</li>
                 <li class="logout" onclick="doLogout()">🚪 Keluar</li>
             </ul>
@@ -129,63 +131,63 @@
             <div id="tree-page" style="display: flex; flex-direction: column; height: 100%;">
                 <div class="toolbar">
                     <button class="btn-hamburger" onclick="toggleSidebar()">☰</button>
-                    <button class="btn-tool btn-pdf" onclick="exportPDF()">📄 PDF</button>
-                    <button class="btn-tool btn-excel" onclick="exportExcel()">📊 Excel</button>
-                    <button class="btn-tool" style="background: #8e44ad;" onclick="fetchDataFromGitHub(true)">🔄 Refresh</button>
+                    <button class="btn-tool" style="background:#e74c3c" onclick="exportPDF()">📄 Cetak PDF</button>
+                    <button class="btn-tool" style="background:#27ae60" onclick="exportExcel()">📊 Excel</button>
+                    <button class="btn-tool" style="background:#8e44ad" onclick="fetchDataFromGitHub(true)">🔄 Refresh</button>
                 </div>
                 <div class="tree-area" id="panzoom-wrapper">
                     <div class="tree" id="tree-container"></div>
                 </div>
             </div>
 
+            <!-- HALAMAN USER -->
             <div id="users-page">
-                <div class="github-settings">
-                    <h4>🔐 Konfigurasi Cloud (GitHub Token)</h4>
-                    <p style="font-size: 0.8rem; margin-bottom: 10px;">Token ini diperlukan agar perubahan data (termasuk user baru) bisa tersimpan permanen.</p>
-                    <input type="password" id="github-token-input" placeholder="ghp_xxxxxxxxxxxx" style="width: 100%; padding: 8px; margin-bottom: 10px;">
-                    <button class="btn-save" onclick="saveGitHubToken()">Simpan Token di Browser</button>
+                <div style="background:#fdf2e9; padding:15px; border-radius:8px; border-left:5px solid #e67e22; margin-bottom:20px;">
+                    <h4>Kunci Cloud (GitHub Token)</h4>
+                    <input type="password" id="github-token-input" placeholder="ghp_xxxx" style="width:100%; margin:10px 0; padding:8px;">
+                    <button class="btn-tool" style="background:#2ecc71" onclick="saveGitHubToken()">Simpan Token</button>
                 </div>
-                <h2>Manajemen Pengguna</h2>
-                <button class="btn-save" style="margin: 10px 0;" onclick="openUserModal('add')">+ Tambah User</button>
-                <div style="overflow-x: auto;">
-                    <table>
-                        <thead><tr><th>Username</th><th>Akses</th><th>Aksi</th></tr></thead>
-                        <tbody id="user-table-body"></tbody>
-                    </table>
-                </div>
+                <h3>Manajemen Pengguna</h3>
+                <button class="btn-tool" style="background:#3498db; margin:10px 0;" onclick="openUserModal('add')">+ Tambah User</button>
+                <table style="width:100%; border-collapse:collapse; margin-top:10px;">
+                    <thead><tr style="background:#eee"><th>User</th><th>Akses</th><th>Aksi</th></tr></thead>
+                    <tbody id="user-table-body"></tbody>
+                </table>
             </div>
         </div>
     </div>
 
-    <!-- MODALS -->
+    <!-- MODAL TREE -->
     <div class="modal" id="modal-tree">
         <div class="modal-content">
-            <h3 id="modal-title">Tambah Data</h3>
-            <div class="form-group"><label>Nama Asli:</label><input type="text" id="input-name"></div>
-            <div class="form-group"><label>Nama Pasangan:</label><input type="text" id="input-partner"></div>
-            <div class="form-group"><label>Keterangan:</label><textarea id="input-desc" rows="3"></textarea></div>
-            <div class="modal-actions">
-                <button class="btn-cancel" onclick="document.getElementById('modal-tree').style.display='none'">Batal</button>
-                <button class="btn-save" onclick="saveTreeData()">Simpan</button>
+            <h3 id="modal-title">Edit Data</h3>
+            <div class="form-group"><label id="label-name">Nama Lengkap:</label><input type="text" id="input-name"></div>
+            <div id="extra-fields">
+                <div class="form-group"><label>Keterangan / Biografi:</label><textarea id="input-desc" rows="3"></textarea></div>
+            </div>
+            <div class="modal-actions" style="display:flex; justify-content:flex-end; gap:10px;">
+                <button style="padding:10px; border:none; background:#ccc; border-radius:5px;" onclick="closeModal()">Batal</button>
+                <button style="padding:10px; border:none; background:#2ecc71; color:white; border-radius:5px;" onclick="saveTreeData()">Simpan Data</button>
             </div>
         </div>
     </div>
 
+    <!-- MODAL USER -->
     <div class="modal" id="modal-user">
         <div class="modal-content">
             <h3>Manajemen User</h3>
             <div class="form-group"><label>Username:</label><input type="text" id="input-username"></div>
-            <div class="form-group"><label>Password Baru:</label><input type="text" id="input-password"></div>
+            <div class="form-group"><label>Password:</label><input type="password" id="input-password"></div>
             <div class="form-group">
                 <label>Hak Akses:</label>
                 <select id="input-role">
-                    <option value="Admin">Admin (Pohon Saja)</option>
-                    <option value="Administrator">Administrator (Semua Akses)</option>
+                    <option value="Admin">Admin (Edit Pohon)</option>
+                    <option value="Administrator">Administrator (Semua)</option>
                 </select>
             </div>
-            <div class="modal-actions">
-                <button class="btn-cancel" onclick="document.getElementById('modal-user').style.display='none'">Batal</button>
-                <button class="btn-save" onclick="saveUserData()">Simpan User</button>
+            <div class="modal-actions" style="display:flex; justify-content:flex-end; gap:10px;">
+                <button onclick="document.getElementById('modal-user').style.display='none'">Batal</button>
+                <button style="background:#2ecc71; color:white; border:none; padding:10px;" onclick="saveUserData()">Simpan</button>
             </div>
         </div>
     </div>
@@ -195,9 +197,8 @@
         const GITHUB_REPO = "Dipabesari"; 
         const GITHUB_FILE_PATH = "data.json";
 
-        // Data Default (jika cloud gagal load pertama kali)
         let usersDB = [{ username: 'superadmin', password: '123', role: 'Administrator' }];
-        let familyTree = { id: 1, name: "Leluhur Utama", partner: "", children: [] };
+        let familyTree = { id: 1, name: "Leluhur", partners: [], children: [] };
         
         let activeUser = null; 
         let githubFileSha = ""; 
@@ -206,6 +207,7 @@
         function utf8_to_b64(str) { return window.btoa(unescape(encodeURIComponent(str))); }
         function b64_to_utf8(str) { return decodeURIComponent(escape(window.atob(str))); }
 
+        // MENGAMBIL DATA
         async function fetchDataFromGitHub(isManual = false) {
             const statusText = document.getElementById('login-status-text');
             try {
@@ -218,94 +220,78 @@
                     let data = await response.json();
                     githubFileSha = data.sha; 
                     let parsed = JSON.parse(b64_to_utf8(data.content));
-                    if(parsed.tree) familyTree = parsed.tree;
+                    
+                    // Migrasi data lama ke baru (Array partners)
+                    const migrate = (node) => {
+                        if(!node.partners) node.partners = [];
+                        if(node.partner) { // Jika ada data model lama
+                            node.partners.push({ name: node.partner, type: 'Istri' });
+                            delete node.partner;
+                        }
+                        if(node.children) node.children.forEach(migrate);
+                    };
+                    
+                    if(parsed.tree) { migrate(parsed.tree); familyTree = parsed.tree; }
                     if(parsed.users) usersDB = parsed.users;
-                    if(isManual) alert("Data berhasil diperbarui!");
-                    statusText.innerText = "✅ Database Terhubung";
+                    if(isManual) alert("Data Cloud sinkron!");
+                    statusText.innerText = "✅ Cloud Terhubung";
                 }
-            } catch (e) { 
-                console.error(e); 
-                statusText.innerText = "⚠️ Mode Offline";
-            }
+            } catch (e) { statusText.innerText = "⚠️ Mode Offline"; }
             if(activeUser) { renderTree(); renderUsersTable(); }
         }
 
+        // MENYIMPAN DATA
         async function syncToGitHub() {
-            if(!myGithubToken) {
-                alert("PERINGATAN: Token GitHub belum diisi di menu Pengaturan. Data hanya tersimpan sementara di browser ini!");
-                return;
-            }
-
+            if(!myGithubToken) return alert("Token GitHub belum diset! Data hanya tersimpan di layar ini.");
             const statusUI = document.getElementById('cloud-status');
             statusUI.style.display = 'block';
-            statusUI.innerText = "☁️ Menyimpan ke Cloud...";
-
-            let dataToSave = { tree: familyTree, users: usersDB };
-            let encodedContent = utf8_to_b64(JSON.stringify(dataToSave, null, 2));
+            statusUI.innerText = "☁️ Menyimpan...";
 
             try {
+                let dataToSave = { tree: familyTree, users: usersDB };
                 let response = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}`, {
                     method: 'PUT',
                     headers: { 'Authorization': `token ${myGithubToken}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         message: `Update by ${activeUser.username}`,
-                        content: encodedContent,
+                        content: utf8_to_b64(JSON.stringify(dataToSave, null, 2)),
                         sha: githubFileSha 
                     })
                 });
-
                 if (response.ok) {
-                    let result = await response.json();
-                    githubFileSha = result.content.sha; // PENTING: Update SHA agar save berikutnya tidak error
-                    statusUI.innerText = "✅ Berhasil Sinkron!";
-                } else {
-                    let err = await response.json();
-                    alert("Gagal simpan ke GitHub: " + err.message);
-                }
-            } catch (error) {
-                alert("Koneksi Error!");
-            }
+                    let res = await response.json();
+                    githubFileSha = res.content.sha;
+                    statusUI.innerText = "✅ Tersimpan!";
+                } else { alert("Gagal Simpan. Cek Token Anda."); }
+            } catch (e) { alert("Kesalahan koneksi."); }
             setTimeout(() => { statusUI.style.display = 'none'; }, 2000);
         }
 
         function saveGitHubToken() {
             let t = document.getElementById('github-token-input').value.trim();
-            if(t) {
-                localStorage.setItem('myGithubToken', t);
-                myGithubToken = t;
-                alert("Token tersimpan!");
-                fetchDataFromGitHub();
-            }
+            if(t) { localStorage.setItem('myGithubToken', t); myGithubToken = t; alert("Token disimpan!"); fetchDataFromGitHub(); }
         }
 
-        // --- AUTH ---
+        // AUTH
         function doLogin() {
-            const u = document.getElementById('login-user').value.trim();
+            const u = document.getElementById('login-user').value;
             const p = document.getElementById('login-pass').value;
-            const found = usersDB.find(x => x.username === u && x.password === p);
-            if (found) {
-                activeUser = found;
-                initDashboard();
-            } else { alert("User/Pass salah!"); }
+            const f = usersDB.find(x => x.username === u && x.password === p);
+            if(f) { activeUser = f; initDashboard(); } else { alert("Salah user/pass!"); }
         }
-
         function doLogout() { activeUser = null; location.reload(); }
 
-        // --- DASHBOARD ---
         let panzoomInstance;
         function initDashboard() {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-screen').style.display = 'flex';
             document.getElementById('display-user').innerText = activeUser.username;
             document.getElementById('display-role').innerText = activeUser.role;
-
             if(activeUser.role !== 'Administrator') document.getElementById('menu-users').style.display = 'none';
-            
             renderTree();
             const elem = document.getElementById('tree-container');
-            panzoomInstance = Panzoom(elem, { maxScale: 3, minScale: 0.1 });
+            panzoomInstance = Panzoom(elem, { maxScale: 4, minScale: 0.1 });
             document.getElementById('panzoom-wrapper').addEventListener('wheel', panzoomInstance.zoomWithWheel);
-            
             if(activeUser.role === 'Administrator') {
                 document.getElementById('github-token-input').value = myGithubToken;
                 renderUsersTable();
@@ -313,10 +299,9 @@
         }
 
         function toggleSidebar() {
-            const s = document.getElementById('sidebar');
-            const o = document.getElementById('sidebar-overlay');
-            s.classList.toggle('open');
-            o.style.display = s.classList.contains('open') ? 'block' : 'none';
+            document.getElementById('sidebar').classList.toggle('open');
+            let ov = document.getElementById('sidebar-overlay');
+            ov.style.display = ov.style.display === 'block' ? 'none' : 'block';
         }
 
         function switchPage(p) {
@@ -327,29 +312,100 @@
 
         function resetZoom() { panzoomInstance.reset(); }
 
-        // --- TREE LOGIC ---
+        // RENDERING POHON
         function renderTree() {
             document.getElementById('tree-container').innerHTML = `<ul>${generateHTML(familyTree, 0)}</ul>`;
         }
 
         function generateHTML(node, level) {
-            let isSuper = activeUser.role === 'Administrator';
-            let html = `<li>
-                <div class="node-card">
-                    <div class="generation-badge">${level === 0 ? 'Leluhur' : 'Gen '+level}</div>
-                    <div class="name">${node.name}</div>
-                    ${node.partner ? `<div class="partner">💍 ${node.partner}</div>` : ''}
-                    ${node.description ? `<div class="description-box">${node.description}</div>` : ''}
-                    <div class="actions">
-                        <button class="btn btn-add" onclick="openTreeModal('add', ${node.id})">+</button>
-                        <button class="btn btn-edit" onclick="openTreeModal('edit', ${node.id})">✏️</button>
-                        ${(node.id !== 1 && isSuper) ? `<button class="btn btn-delete" onclick="deleteNode(${node.id})">🗑️</button>` : ''}
-                    </div>
-                </div>`;
-            if (node.children && node.children.length > 0) {
-                html += `<ul>`; node.children.forEach(c => html += generateHTML(c, level + 1)); html += `</ul>`;
+            let partnersHTML = "";
+            if(node.partners && node.partners.length > 0) {
+                node.partners.forEach((p, index) => {
+                    let cls = p.type === 'Suami' ? 'tag-suami' : 'tag-istri';
+                    partnersHTML += `<div class="partner-tag ${cls}">
+                        <span>💍 ${p.name}</span>
+                        <span class="btn-del-p" onclick="deletePartner(${node.id}, ${index})">×</span>
+                    </div>`;
+                });
             }
-            return html + `</li>`;
+
+            return `<li>
+                <div class="node-card">
+                    <div class="gen-label">${level === 0 ? 'Leluhur' : 'Generasi ' + level}</div>
+                    <div class="name">${node.name}</div>
+                    <div class="partners-container">${partnersHTML}</div>
+                    ${node.description ? `<div class="bio">${node.description}</div>` : ''}
+                    <div class="actions">
+                        <button class="btn-act b-anak" onclick="openTreeModal('add-child', ${node.id})">+ Tambah Anak</button>
+                        <button class="btn-act b-suami" onclick="openTreeModal('add-suami', ${node.id})">+ Suami</button>
+                        <button class="btn-act b-istri" onclick="openTreeModal('add-istri', ${node.id})">+ Istri</button>
+                        <button class="btn-act b-edit" onclick="openTreeModal('edit', ${node.id})">✏️ Edit</button>
+                        ${(node.id !== 1 && activeUser.role === 'Administrator') ? `<button class="btn-act b-del" onclick="deleteNode(${node.id})">🗑️</button>` : ''}
+                    </div>
+                </div>
+                ${node.children && node.children.length > 0 ? `<ul>${node.children.map(c => generateHTML(c, level+1)).join('')}</ul>` : ''}
+            </li>`;
+        }
+
+        // MODAL LOGIC
+        let currentAct = "", currentId = null;
+        function openTreeModal(act, id) {
+            currentAct = act; currentId = id;
+            document.getElementById('input-name').value = "";
+            document.getElementById('input-desc').value = "";
+            document.getElementById('extra-fields').style.display = act.includes('add-') && !act.includes('child') ? 'none' : 'block';
+            
+            if(act === 'add-child') document.getElementById('modal-title').innerText = "Tambah Anak Baru";
+            if(act === 'add-suami') document.getElementById('modal-title').innerText = "Tambah Suami";
+            if(act === 'add-istri') document.getElementById('modal-title').innerText = "Tambah Istri";
+            
+            if(act === 'edit') {
+                document.getElementById('modal-title').innerText = "Edit Biodata";
+                let n = findNode(familyTree, id);
+                document.getElementById('input-name').value = n.name;
+                document.getElementById('input-desc').value = n.description || "";
+            }
+            document.getElementById('modal-tree').style.display = 'flex';
+        }
+
+        function closeModal() { document.getElementById('modal-tree').style.display = 'none'; }
+
+        function saveTreeData() {
+            let name = document.getElementById('input-name').value.trim();
+            let desc = document.getElementById('input-desc').value.trim();
+            if(!name) return alert("Nama tidak boleh kosong!");
+
+            if(currentAct === 'add-child') {
+                let parent = findNode(familyTree, currentId);
+                parent.children.push({ id: Date.now(), name: name, partners: [], description: desc, children: [] });
+            } else if(currentAct === 'add-suami' || currentAct === 'add-istri') {
+                let target = findNode(familyTree, currentId);
+                target.partners.push({ name: name, type: currentAct === 'add-suami' ? 'Suami' : 'Istri' });
+            } else if(currentAct === 'edit') {
+                let target = findNode(familyTree, currentId);
+                target.name = name; target.description = desc;
+            }
+            
+            closeModal(); renderTree(); syncToGitHub();
+        }
+
+        function deletePartner(nodeId, pIndex) {
+            if(confirm("Hapus pasangan ini?")) {
+                let n = findNode(familyTree, nodeId);
+                n.partners.splice(pIndex, 1);
+                renderTree(); syncToGitHub();
+            }
+        }
+
+        function deleteNode(id) {
+            if(!confirm("Hapus orang ini dan semua keturunannya?")) return;
+            const remove = (root) => {
+                if(!root.children) return;
+                let idx = root.children.findIndex(x => x.id === id);
+                if(idx !== -1) { root.children.splice(idx, 1); return true; }
+                for(let c of root.children) if(remove(c)) return true;
+            };
+            remove(familyTree); renderTree(); syncToGitHub();
         }
 
         function findNode(root, id) {
@@ -358,126 +414,57 @@
             return null;
         }
 
-        let treeAction = "", treeTargetId = null;
-        function openTreeModal(act, id) {
-            treeAction = act; treeTargetId = id;
-            document.getElementById('input-name').value = "";
-            document.getElementById('input-partner').value = "";
-            document.getElementById('input-desc').value = "";
-            if(act === 'edit') {
-                let n = findNode(familyTree, id);
-                document.getElementById('input-name').value = n.name;
-                document.getElementById('input-partner').value = n.partner || "";
-                document.getElementById('input-desc').value = n.description || "";
-            }
-            document.getElementById('modal-tree').style.display = 'flex';
-        }
-
-        function saveTreeData() {
-            let n = document.getElementById('input-name').value;
-            let p = document.getElementById('input-partner').value;
-            let d = document.getElementById('input-desc').value;
-            if(!n) return alert("Nama kosong!");
-
-            if(treeAction === 'add') {
-                let parent = findNode(familyTree, treeTargetId);
-                if(!parent.children) parent.children = [];
-                parent.children.push({ id: Date.now(), name: n, partner: p, description: d, children: [] });
-            } else {
-                let target = findNode(familyTree, treeTargetId);
-                target.name = n; target.partner = p; target.description = d;
-            }
-            document.getElementById('modal-tree').style.display = 'none';
-            renderTree(); syncToGitHub();
-        }
-
-        function deleteNode(id) {
-            if(!confirm("Hapus anggota ini?")) return;
-            function remove(root) {
-                if(!root.children) return;
-                let idx = root.children.findIndex(x => x.id === id);
-                if(idx !== -1) { root.children.splice(idx, 1); return true; }
-                for(let c of root.children) if(remove(c)) return true;
-            }
-            remove(familyTree); renderTree(); syncToGitHub();
-        }
-
-        // --- USER MANAGEMENT (FIXED) ---
-        let userEditTarget = null;
+        // USER MANAGEMENT
         function renderUsersTable() {
-            let b = document.getElementById('user-table-body');
-            b.innerHTML = "";
+            let b = document.getElementById('user-table-body'); b.innerHTML = "";
             usersDB.forEach(u => {
                 b.innerHTML += `<tr>
-                    <td>${u.username}</td>
-                    <td>${u.role}</td>
-                    <td>
-                        <button onclick="openUserModal('edit', '${u.username}')">Edit</button>
-                        ${u.username !== 'superadmin' ? `<button onclick="deleteUser('${u.username}')">Hapus</button>` : ''}
+                    <td style="padding:10px; border:1px solid #ddd;">${u.username}</td>
+                    <td style="padding:10px; border:1px solid #ddd;">${u.role}</td>
+                    <td style="padding:10px; border:1px solid #ddd;">
+                        <button onclick="deleteUser('${u.username}')" ${u.username==='superadmin'?'disabled':''}>Hapus</button>
                     </td>
                 </tr>`;
             });
         }
-
-        function openUserModal(act, uname) {
-            userEditTarget = act === 'edit' ? uname : null;
-            document.getElementById('input-username').value = uname || "";
-            document.getElementById('input-username').disabled = act === 'edit';
-            document.getElementById('input-password').value = "";
-            document.getElementById('modal-user').style.display = 'flex';
-        }
-
+        function openUserModal() { document.getElementById('modal-user').style.display = 'flex'; }
         function saveUserData() {
-            let u = document.getElementById('input-username').value.trim();
+            let u = document.getElementById('input-username').value;
             let p = document.getElementById('input-password').value;
             let r = document.getElementById('input-role').value;
-            if(!u || (!userEditTarget && !p)) return alert("Data tidak lengkap!");
-
-            if(userEditTarget) {
-                let idx = usersDB.findIndex(x => x.username === userEditTarget);
-                if(p) usersDB[idx].password = p; // Hanya ganti pass jika diisi
-                usersDB[idx].role = r;
-            } else {
-                if(usersDB.find(x => x.username === u)) return alert("User sudah ada!");
-                usersDB.push({ username: u, password: p, role: r });
-            }
+            if(!u || !p) return alert("Lengkapi data!");
+            usersDB.push({ username: u, password: p, role: r });
             document.getElementById('modal-user').style.display = 'none';
-            renderUsersTable();
-            syncToGitHub(); // Langsung simpan ke GitHub
+            renderUsersTable(); syncToGitHub();
         }
-
         function deleteUser(u) {
-            if(confirm("Hapus user "+u+"?")) {
-                usersDB = usersDB.filter(x => x.username !== u);
-                renderUsersTable();
-                syncToGitHub();
-            }
+            if(confirm("Hapus user?")) { usersDB = usersDB.filter(x => x.username !== u); renderUsersTable(); syncToGitHub(); }
         }
 
-        // --- EXPORT ---
+        // EXPORT
         function exportPDF() {
             panzoomInstance.reset();
             setTimeout(() => {
                 const el = document.getElementById('tree-container');
-                const opt = { 
+                html2pdf().set({ 
                     margin: 10, filename: 'silsilah.pdf', 
                     html2canvas: { scale: 2 }, 
                     jsPDF: { unit: 'px', format: [el.scrollWidth + 50, el.scrollHeight + 50], orientation: 'l' }
-                };
-                html2pdf().set(opt).from(el).save();
+                }).from(el).save();
             }, 500);
         }
 
         function exportExcel() {
             let csv = "ID,Nama,Pasangan,Keterangan\n";
-            function flat(n) {
-                csv += `${n.id},"${n.name}","${n.partner||''}","${n.description||''}"\n`;
+            const flat = (n) => {
+                let ps = n.partners.map(p => `${p.name}(${p.type})`).join("; ");
+                csv += `${n.id},"${n.name}","${ps}","${n.description||''}"\n`;
                 if(n.children) n.children.forEach(flat);
-            }
+            };
             flat(familyTree);
             let link = document.createElement("a");
             link.href = "data:text/csv;charset=utf-8,\uFEFF" + encodeURI(csv);
-            link.download = "data_keluarga.csv";
+            link.download = "silsilah.csv";
             link.click();
         }
 
