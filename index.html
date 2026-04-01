@@ -4,17 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Family Tree</title>
+<title>Family Tree Profesional</title>
 
-<!-- CDN STABIL -->
 <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
 
 <style>
 body {
-    font-family: Arial;
     margin: 0;
+    font-family: Arial;
     background: #f4f6f9;
-    text-align: center;
 }
 
 h2 {
@@ -22,14 +20,23 @@ h2 {
     color: white;
     padding: 15px;
     margin: 0;
+    text-align: center;
 }
 
 #tree {
     width: 100%;
-    height: 80vh;
+    height: 85vh;
     background: white;
 }
 
+/* NODE */
+.node rect {
+    fill: white;
+    stroke: black;
+    rx: 10;
+}
+
+/* MENU */
 .menu {
     position: absolute;
     background: white;
@@ -55,70 +62,94 @@ h2 {
 
 <body>
 
-<h2>Family Tree Online</h2>
+<h2>Family Tree Profesional</h2>
 
 <div id="tree"></div>
 
 <div id="menu" class="menu">
-    <button onclick="editNode()">Edit</button>
-    <button onclick="addChild()">Tambah Anak</button>
-    <button onclick="deleteNode()">Hapus</button>
+    <button onclick="editNode()">✏️ Edit</button>
+    <button onclick="addSpouse()">👩 Tambah Pasangan</button>
+    <button onclick="addChild()">👶 Tambah Anak</button>
+    <button onclick="deleteNode()">❌ Hapus</button>
 </div>
 
 <script>
 
 let data = {
-    name: "Kepala Keluarga",
+    name: "Ki. Adam",
+    spouse: { name: "Ny. Agami" },
     children: []
 };
 
 let selected = null;
 
+// KONVERSI DATA (pasangan jadi satu group)
+function convert(person) {
+
+    let children = [];
+
+    if (person.children) {
+        person.children.forEach(c => {
+            children.push(convert(c));
+        });
+    }
+
+    return {
+        name: person.name + (person.spouse ? " & " + person.spouse.name : ""),
+        ref: person,
+        children: children
+    };
+}
+
+// DRAW TREE
 function draw() {
 
     document.getElementById("tree").innerHTML = "";
 
     const width = window.innerWidth;
-    const height = 500;
+    const height = 550;
 
     const svg = d3.select("#tree")
         .append("svg")
         .attr("width", width)
         .attr("height", height);
 
-    const root = d3.hierarchy(data);
-    const tree = d3.tree().size([width - 50, height - 50]);
+    const root = d3.hierarchy(convert(data));
+    const tree = d3.tree().size([width - 100, height - 100]);
 
     tree(root);
 
+    // garis
     svg.selectAll("line")
         .data(root.links())
         .enter()
         .append("line")
-        .attr("x1", d => d.source.x)
-        .attr("y1", d => d.source.y)
-        .attr("x2", d => d.target.x)
-        .attr("y2", d => d.target.y)
+        .attr("x1", d => d.source.x + 50)
+        .attr("y1", d => d.source.y + 50)
+        .attr("x2", d => d.target.x + 50)
+        .attr("y2", d => d.target.y + 50)
         .attr("stroke", "black");
 
+    // node
     const node = svg.selectAll("g")
         .data(root.descendants())
         .enter()
         .append("g")
-        .attr("transform", d => `translate(${d.x},${d.y})`);
+        .attr("transform", d => `translate(${d.x + 50},${d.y + 50})`);
 
-    node.append("circle")
-        .attr("r", 20)
-        .attr("fill", "white")
-        .attr("stroke", "black");
+    node.append("rect")
+        .attr("width", 140)
+        .attr("height", 40)
+        .attr("x", -70)
+        .attr("y", -20);
 
     node.append("text")
-        .text(d => d.data.name)
         .attr("text-anchor", "middle")
-        .attr("dy", 5);
+        .attr("dy", 5)
+        .text(d => d.data.name);
 
     node.on("click", (event, d) => {
-        selected = d.data;
+        selected = d.data.ref;
 
         const menu = document.getElementById("menu");
         menu.style.left = event.pageX + "px";
@@ -133,28 +164,44 @@ function draw() {
     };
 }
 
+// EDIT
 function editNode(){
-    const n = prompt("Nama:");
+    const n = prompt("Nama baru:", selected.name);
     if(n){
         selected.name = n;
         draw();
     }
 }
 
+// TAMBAH PASANGAN
+function addSpouse(){
+    const n = prompt("Nama pasangan:");
+    if(!n) return;
+
+    selected.spouse = { name: n };
+    draw();
+}
+
+// TAMBAH ANAK
 function addChild(){
     const n = prompt("Nama anak:");
     if(!n) return;
 
     selected.children = selected.children || [];
-    selected.children.push({name:n});
+    selected.children.push({
+        name: n,
+        children: []
+    });
 
     draw();
 }
 
+// HAPUS
 function deleteNode(){
 
     function remove(node, target){
         if(!node.children) return;
+
         node.children = node.children.filter(c => c !== target);
         node.children.forEach(c => remove(c, target));
     }
@@ -168,6 +215,7 @@ function deleteNode(){
     draw();
 }
 
+// INIT
 draw();
 
 </script>
