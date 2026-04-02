@@ -148,7 +148,7 @@
             <div id="tree-page" style="display: flex; flex-direction: column; height: 100%;">
                 <div class="toolbar">
                     <button class="btn-hamburger" onclick="toggleSidebar()">☰</button>
-                    <span class="toolbar-text"><b>Klik Kiri:</b> Nasab | <b>Klik Kanan:</b> Edit Data</span>
+                    <span class="toolbar-text"><b>Klik Kiri:</b> Lihat Nasab | <b>Klik Kanan:</b> Edit Data</span>
                     <button class="btn-tool" style="background:#e74c3c" onclick="exportPDF()">PDF</button>
                     <button class="btn-tool" style="background:#27ae60" onclick="exportExcel()">Excel</button>
                     <button class="btn-tool" style="background:var(--accent)" onclick="fetchDataFromGitHub(true)">🔄</button>
@@ -221,7 +221,7 @@
 
     <div class="modal" id="modal-nasab">
         <div class="modal-content" style="text-align:center;">
-            <h3>📜 Garis Keturunan</h3>
+            <h3>📜 Silsilah Keturunan</h3>
             <div id="nasab-content" style="margin: 20px 0; font-weight: 500;"></div>
             <button class="btn-save" style="background:var(--primary); color:white; border:none; padding:10px 30px; border-radius:8px;" onclick="closeModal('modal-nasab')">Tutup</button>
         </div>
@@ -293,10 +293,21 @@
 
         function deleteUser(u) { if(confirm("Hapus?")) { usersDB = usersDB.filter(x => x.username !== u); renderUserTable(); syncToGitHub(); } }
 
+        // KLIK KIRI: LIHAT NASAB (DIPERBARUI SESUAI REQUEST)
         function handleNodeClick(e, id) {
             e.stopPropagation(); e.preventDefault();
-            const path = []; findPathToRoot(familyTree, id, path);
-            document.getElementById('nasab-content').innerHTML = path.reverse().map((n, i) => i === 0 ? `<b style="color:var(--accent)">${n.name}</b>` : `anak dari <b>${n.name}</b>`).join("<br> ↓ <br>");
+            const path = []; 
+            findPathToRoot(familyTree, id, path);
+            
+            // Urutkan dari leluhur (atas) ke target (bawah)
+            const sortedPath = path.reverse();
+            
+            const nasabHTML = sortedPath.map((n, index) => {
+                let genLabel = index === 0 ? "👑 Leluhur" : `Keturunan Ke-${index}`;
+                return `<div style="margin-bottom:10px;"><b>${n.name}</b><br><span style="font-size:0.75rem; color:var(--accent)">(${genLabel})</span></div>`;
+            }).join(" ↓ ");
+
+            document.getElementById('nasab-content').innerHTML = nasabHTML;
             document.getElementById('modal-nasab').style.display = 'flex';
         }
 
@@ -379,24 +390,16 @@
             const elem = document.getElementById('tree-container');
             panzoomInstance = Panzoom(elem, { maxScale: 5, minScale: 0.1, canvas: true });
             document.getElementById('panzoom-wrapper').addEventListener('wheel', panzoomInstance.zoomWithWheel);
-            
-            // FOKUS KE TOKOH PERTAMA SAAT BUKA
             setTimeout(focusAncestor, 600);
         }
 
-        // FUNGSI BARU: FOKUS KE TOKOH PERTAMA (LELUHUR)
         function focusAncestor() {
             const wrapper = document.getElementById('panzoom-wrapper');
             const content = document.getElementById('tree-container');
-            
-            // Hitung skala: HP zoom lebih dekat (0.9), Desktop standar (0.7)
             const isMobile = window.innerWidth <= 768;
             const scale = isMobile ? 0.85 : 0.75;
-            
             panzoomInstance.zoom(scale, { animate: true });
-
             setTimeout(() => {
-                // Pusatkan horizontal (X) dan berikan jarak sedikit dari atas (Y)
                 const x = (wrapper.clientWidth / 2) - (content.offsetWidth * scale / 2);
                 const y = isMobile ? 20 : 50; 
                 panzoomInstance.pan(x, y, { animate: true });
