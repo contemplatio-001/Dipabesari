@@ -11,13 +11,12 @@
             --primary: #1a5276; --secondary: #2980b9; --accent: #3498db; 
             --light-blue: #ebf5fb; --bg: #f4f7f6; --white: #ffffff;
             --card-border: #a9cce3; --shadow: 0 10px 20px rgba(41, 128, 185, 0.15);
-            --text-bio: #546e7a; /* Warna khusus untuk biografi */
+            --text-bio: #546e7a;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         body { background-color: var(--bg); color: #2c3e50; overflow: hidden; }
 
-        /* STATUS CLOUD */
         #cloud-status {
             position: fixed; bottom: 20px; right: 20px; padding: 12px 25px;
             background: var(--primary); color: white; border-radius: 50px;
@@ -25,17 +24,14 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.2); border: 2px solid var(--accent);
         }
 
-        /* LOGIN */
         #login-screen { position: fixed; top:0; left:0; width: 100vw; height: 100vh; background: linear-gradient(135deg, var(--primary), var(--accent)); display: flex; justify-content: center; align-items: center; z-index: 9999; }
         .login-box { background: #fff; padding: 30px; border-radius: 20px; width: 90%; max-width: 350px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
         .login-box h2 { margin-bottom: 20px; color: var(--primary); }
         .login-box input { width: 100%; padding: 12px; margin-bottom: 15px; border: 2px solid #eee; border-radius: 10px; outline: none; }
         .login-box button { width: 100%; padding: 12px; background: var(--secondary); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .login-box button:hover { background: var(--primary); }
 
         #app-screen { display: none; width: 100vw; height: 100vh; display: flex; }
         
-        /* SIDEBAR */
         .sidebar { width: 260px; background: var(--primary); color: white; display: flex; flex-direction: column; z-index: 1000; transition: 0.3s ease; }
         .sidebar-header { padding: 25px 20px; text-align: center; background: rgba(0,0,0,0.1); border-bottom: 1px solid rgba(255,255,255,0.1); }
         .sidebar-menu { list-style: none; padding: 15px 0; flex-grow: 1; }
@@ -45,19 +41,16 @@
 
         .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; background: var(--light-blue); }
         
-        /* TOOLBAR */
         .toolbar { background: var(--white); padding: 10px 15px; display: flex; gap: 10px; align-items: center; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .btn-hamburger { display: none; background: transparent; border: none; font-size: 1.8rem; color: var(--primary); cursor: pointer; }
         .btn-tool { padding: 8px 12px; border: none; border-radius: 6px; font-size: 0.75rem; cursor: pointer; color: white; font-weight: bold; }
         .toolbar-text { font-size: 0.75rem; color: #7f8c8d; flex-grow: 1; font-style: italic; }
 
-        /* TREE AREA */
         .tree-area { flex-grow: 1; position: relative; overflow: hidden; cursor: grab; }
         .tree { display: inline-flex; padding: 100px; transform-origin: 0 0; }
         .tree ul { padding-top: 30px; position: relative; display: flex; justify-content: center; }
         .tree li { text-align: center; list-style-type: none; position: relative; padding: 30px 5px 0 5px; display: flex; flex-direction: column; align-items: center; }
         
-        /* GARIS KETURUNAN */
         .tree li::before, .tree li::after { content: ''; position: absolute; top: 0; right: 50%; border-top: 3px solid var(--card-border); width: 50%; height: 30px; }
         .tree li::after { right: auto; left: 50%; border-left: 3px solid var(--card-border); }
         .tree li:only-child::after, .tree li:only-child::before { display: none; }
@@ -67,7 +60,6 @@
         .tree li:first-child::before, .tree li:last-child::after { border: 0 none; }
         .tree ul ul::before { content: ''; position: absolute; top: 0; left: 50%; border-left: 3px solid var(--card-border); width: 0; height: 30px; }
 
-        /* CARD STYLE */
         .node-card { 
             background: var(--white); border: 1px solid var(--card-border); padding: 15px; border-radius: 12px; 
             min-width: 180px; max-width: 220px; box-shadow: var(--shadow); position: relative; z-index: 1; 
@@ -80,11 +72,9 @@
         .partner { font-size: 0.8rem; color: #d35400; background: #fff4e6; border-radius: 6px; padding: 3px 8px; display: inline-block; margin-bottom: 5px; border: 1px solid #ffe3c4;}
         .description-box { font-size: 0.75rem; color: var(--text-bio); background: #f8f9fa; border-radius: 6px; padding: 8px; margin-top: 5px; text-align: left; border-left: 3px solid var(--card-border); font-style: italic; }
 
-        /* ZOOM */
         .zoom-controls { position: absolute; bottom: 20px; left: 20px; display: flex; flex-direction: column; gap: 8px; z-index: 100; }
         .btn-zoom { width: 40px; height: 40px; border-radius: 8px; border: none; background: var(--white); color: var(--primary); font-size: 1.2rem; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
 
-        /* CONTEXT MENU */
         .custom-menu {
             display: none; position: fixed; background: white; min-width: 180px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             z-index: 10000; border-radius: 12px; padding: 8px 0; border: 1px solid #eee;
@@ -92,22 +82,18 @@
         .custom-menu-item { padding: 10px 20px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; color: #444; }
         .custom-menu-item:hover { background: var(--light-blue); color: var(--secondary); }
 
-        /* MODAL */
         .modal { display: none; position: fixed; z-index: 10001; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); justify-content: center; align-items: center; padding: 10px; }
         .modal-content { background: #fff; padding: 25px; border-radius: 15px; width: 100%; max-width: 450px; max-height: 90vh; overflow-y: auto; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; color: var(--primary); }
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; outline: none; }
-        .form-group input:focus { border-color: var(--accent); }
         .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
 
-        /* USER TABLE */
         .table-responsive { overflow-x: auto; width: 100%; background: white; border-radius: 10px; margin-top: 20px; }
         table { width: 100%; border-collapse: collapse; min-width: 500px; }
         th { background: var(--primary); color: white; padding: 12px; text-align: left; }
         td { padding: 12px; border-bottom: 1px solid #eee; }
 
-        /* RESPONSIVE HP */
         @media (max-width: 768px) {
             .sidebar { position: fixed; left: -260px; top: 0; height: 100%; box-shadow: 5px 0 15px rgba(0,0,0,0.1); }
             .sidebar.open { left: 0; }
@@ -123,7 +109,6 @@
 
     <div id="cloud-status">☁️ Sinkronisasi Ke GitHub...</div>
 
-    <!-- ACTION MENU (KLIK KANAN) -->
     <div id="action-menu" class="custom-menu">
         <div style="padding: 5px 20px; font-size: 0.7rem; font-weight: bold; color: var(--accent);">OPSI EDITING</div>
         <div class="custom-menu-item" onclick="menuAction('edit')">✏️ Edit Profil</div>
@@ -133,7 +118,6 @@
         <div id="menu-delete-opt" class="custom-menu-item" style="color:#e74c3c;" onclick="menuAction('delete')">🗑️ Hapus Data</div>
     </div>
 
-    <!-- LOGIN -->
     <div id="login-screen">
         <div class="login-box">
             <h1 style="font-size: 3rem;">🌳</h1>
@@ -145,7 +129,6 @@
         </div>
     </div>
 
-    <!-- APP SCREEN -->
     <div id="app-screen">
         <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
         <div id="sidebar" class="sidebar">
@@ -180,7 +163,6 @@
                 </div>
             </div>
 
-            <!-- HALAMAN USER (HANYA ADMINISTRATOR) -->
             <div id="users-page" style="display:none; padding: 25px; overflow-y: auto;">
                 <button class="btn-hamburger" onclick="toggleSidebar()" style="display:inline-block; margin-bottom: 15px;">☰ Menu</button>
                 <h2 style="color:var(--primary); border-bottom: 2px solid var(--accent); padding-bottom: 10px;">👥 Manajemen Pengguna</h2>
@@ -206,51 +188,46 @@
         </div>
     </div>
 
-    <!-- MODAL EDIT POHON -->
     <div class="modal" id="modal-tree">
         <div class="modal-content">
             <h3 id="modal-title">Edit Data</h3>
             <div class="form-group"><label id="label-name">Nama:</label><input type="text" id="input-name"></div>
             <div class="form-group"><label id="label-partner">Pasangan:</label><input type="text" id="input-partner"></div>
-            <div class="form-group"><label>Keterangan/Biografi:</label><textarea id="input-desc" rows="4" placeholder="Tulis biografi singkat di sini..."></textarea></div>
+            <div class="form-group"><label>Keterangan/Biografi:</label><textarea id="input-desc" rows="4" placeholder="Biografi singkat..."></textarea></div>
             <div class="modal-actions">
-                <button class="btn-cancel" style="padding:10px 20px; cursor:pointer;" onclick="closeModal('modal-tree')">Batal</button>
-                <button class="btn-save" style="background:var(--secondary); color:white; border:none; padding:10px 25px; border-radius:8px; cursor:pointer;" onclick="saveTreeData()">Simpan Perubahan</button>
+                <button class="btn-cancel" onclick="closeModal('modal-tree')">Batal</button>
+                <button class="btn-save" style="background:var(--secondary); color:white; border:none; padding:10px 25px; border-radius:8px;" onclick="saveTreeData()">Simpan</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL USER -->
     <div class="modal" id="modal-user">
         <div class="modal-content">
             <h3 id="modal-user-title">Tambah User Baru</h3>
             <div class="form-group"><label>Username:</label><input type="text" id="input-username"></div>
-            <div class="form-group"><label>Password:</label><input type="password" id="input-password" placeholder="Kosongkan jika tidak ubah"></div>
+            <div class="form-group"><label>Password:</label><input type="password" id="input-password"></div>
             <div class="form-group"><label>Hak Akses:</label>
                 <select id="input-role">
-                    <option value="Admin">Admin (Edit Pohon)</option>
-                    <option value="Administrator">Administrator (Hak Penuh)</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Administrator">Administrator</option>
                 </select>
             </div>
             <div class="modal-actions">
                 <button class="btn-cancel" onclick="closeModal('modal-user')">Batal</button>
-                <button class="btn-save" style="background:var(--accent); color:white; border:none; padding:10px 20px; border-radius:8px;" onclick="saveUserData()">Simpan User</button>
+                <button class="btn-save" style="background:var(--accent); color:white; border:none; padding:10px 20px; border-radius:8px;" onclick="saveUserData()">Simpan</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL NASAB (KLIK KIRI) -->
     <div class="modal" id="modal-nasab">
         <div class="modal-content" style="text-align:center;">
-            <h1 style="margin-bottom: 10px;">📜</h1>
-            <h3>Garis Keturunan (Nasab)</h3>
+            <h3>📜 Garis Keturunan</h3>
             <div id="nasab-content" style="margin: 20px 0; font-weight: 500;"></div>
             <button class="btn-save" style="background:var(--primary); color:white; border:none; padding:10px 30px; border-radius:8px;" onclick="closeModal('modal-nasab')">Tutup</button>
         </div>
     </div>
 
     <script>
-        // --- KONFIGURASI GITHUB ---
         const GITHUB_OWNER = "contemplatio-001"; 
         const GITHUB_REPO = "Dipabesari"; 
         const GITHUB_FILE_PATH = "data.json";
@@ -265,7 +242,6 @@
         function utf8_to_b64(str) { return window.btoa(unescape(encodeURIComponent(str))); }
         function b64_to_utf8(str) { return decodeURIComponent(escape(window.atob(str))); }
 
-        // --- NAVIGASI ---
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('open');
             document.getElementById('sidebar-overlay').classList.toggle('active');
@@ -279,20 +255,15 @@
 
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        // --- MANAJEMEN USER ---
         function renderUserTable() {
             const tbody = document.getElementById('user-table-body');
             tbody.innerHTML = "";
             usersDB.forEach(u => {
                 const isSuper = u.username === 'superadmin';
-                tbody.innerHTML += `<tr>
-                    <td><b>${u.username}</b></td>
-                    <td><span style="font-size:0.8rem; background:#eee; padding:2px 8px; border-radius:5px;">${u.role}</span></td>
-                    <td>
-                        <button onclick="openUserModal('edit', '${u.username}')" style="background:var(--accent); color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">Edit</button>
-                        ${!isSuper ? `<button onclick="deleteUser('${u.username}')" style="background:#e74c3c; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; margin-left:5px;">Hapus</button>` : ''}
-                    </td>
-                </tr>`;
+                tbody.innerHTML += `<tr><td><b>${u.username}</b></td><td>${u.role}</td><td>
+                    <button onclick="openUserModal('edit', '${u.username}')">Edit</button>
+                    ${!isSuper ? `<button onclick="deleteUser('${u.username}')">Hapus</button>` : ''}
+                </td></tr>`;
             });
         }
 
@@ -300,18 +271,14 @@
         function openUserModal(action, username = null) {
             document.getElementById('modal-user').style.display = 'flex';
             if(action === 'edit') {
-                editingUser = username;
-                let u = usersDB.find(x => x.username === username);
+                editingUser = username; let u = usersDB.find(x => x.username === username);
                 document.getElementById('input-username').value = u.username;
                 document.getElementById('input-username').disabled = true;
                 document.getElementById('input-role').value = u.role;
-                document.getElementById('modal-user-title').innerText = "Edit User";
             } else {
-                editingUser = null;
-                document.getElementById('input-username').value = "";
+                editingUser = null; document.getElementById('input-username').value = "";
                 document.getElementById('input-username').disabled = false;
                 document.getElementById('input-password').value = "";
-                document.getElementById('modal-user-title').innerText = "Tambah User Baru";
             }
         }
 
@@ -319,22 +286,13 @@
             let u = document.getElementById('input-username').value.trim();
             let p = document.getElementById('input-password').value;
             let r = document.getElementById('input-role').value;
-            if(!u) return alert("Username wajib!");
-            
-            if(editingUser) {
-                let user = usersDB.find(x => x.username === editingUser);
-                if(p) user.password = p;
-                user.role = r;
-            } else {
-                if(usersDB.find(x => x.username === u)) return alert("Username sudah ada!");
-                usersDB.push({ username: u, password: p || "123", role: r });
-            }
+            if(editingUser) { let user = usersDB.find(x => x.username === editingUser); if(p) user.password = p; user.role = r; }
+            else { usersDB.push({ username: u, password: p || "123", role: r }); }
             closeModal('modal-user'); renderUserTable(); syncToGitHub();
         }
 
-        function deleteUser(u) { if(confirm(`Hapus user ${u}?`)) { usersDB = usersDB.filter(x => x.username !== u); renderUserTable(); syncToGitHub(); } }
+        function deleteUser(u) { if(confirm("Hapus?")) { usersDB = usersDB.filter(x => x.username !== u); renderUserTable(); syncToGitHub(); } }
 
-        // --- TREE INTERACTION ---
         function handleNodeClick(e, id) {
             e.stopPropagation(); e.preventDefault();
             const path = []; findPathToRoot(familyTree, id, path);
@@ -344,11 +302,8 @@
 
         function handleNodeRightClick(e, id) {
             e.preventDefault(); e.stopPropagation();
-            selectedNodeId = id;
-            const menu = document.getElementById('action-menu');
-            menu.style.display = 'block';
-            menu.style.left = (e.pageX > window.innerWidth - 200 ? e.pageX - 180 : e.pageX) + 'px';
-            menu.style.top = e.pageY + 'px';
+            selectedNodeId = id; const menu = document.getElementById('action-menu');
+            menu.style.display = 'block'; menu.style.left = e.pageX + 'px'; menu.style.top = e.pageY + 'px';
             document.getElementById('menu-delete-opt').style.display = (id === 1 || activeUser.role !== 'Administrator') ? 'none' : 'flex';
         }
 
@@ -363,18 +318,15 @@
         }
 
         function openSpouseModal(type, id) {
-            treeAction = 'edit'; treeTargetId = id;
-            let node = findNode(familyTree, id);
+            treeAction = 'edit'; treeTargetId = id; let node = findNode(familyTree, id);
             document.getElementById('modal-title').innerText = "Tambah Pasangan";
             document.getElementById('input-name').value = node.name;
             document.getElementById('input-partner').value = node.partner || "";
             document.getElementById('modal-tree').style.display = 'flex';
         }
 
-        // --- GITHUB SYNC ---
         async function fetchDataFromGitHub(manual = false) {
             const statusText = document.getElementById('login-status-text');
-            if(statusText) statusText.innerText = "⏳ Menghubungkan ke server...";
             try {
                 let url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}`;
                 let headers = myGithubToken ? { 'Authorization': `token ${myGithubToken}` } : {};
@@ -384,7 +336,7 @@
                     let parsed = JSON.parse(b64_to_utf8(data.content));
                     familyTree = parsed.tree; usersDB = parsed.users;
                     if(statusText) statusText.innerText = "✅ Server Terhubung!";
-                    if(document.getElementById('app-screen').style.display === 'flex') { renderTree(); renderUserTable(); }
+                    if(document.getElementById('app-screen').style.display === 'flex') { renderTree(); }
                 }
             } catch (e) { if(statusText) statusText.innerText = "❌ Gagal koneksi cloud."; }
         }
@@ -397,25 +349,21 @@
                 let res = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}`, {
                     method: 'PUT',
                     headers: { 'Authorization': `token ${myGithubToken}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: `Update oleh ${activeUser.username}`, content, sha: githubFileSha })
+                    body: JSON.stringify({ message: `Update`, content, sha: githubFileSha })
                 });
                 if (res.ok) { let result = await res.json(); githubFileSha = result.content.sha; ui.innerText = "✅ Tersimpan!"; }
-            } catch (e) { ui.innerText = "❌ Gagal Simpan"; }
+            } catch (e) {}
             setTimeout(() => ui.style.display = 'none', 2000);
         }
 
-        function saveGitHubToken() {
-            let t = document.getElementById('github-token-input').value.trim();
-            localStorage.setItem('myGithubToken', t); myGithubToken = t; alert("Token disimpan!"); fetchDataFromGitHub();
-        }
+        function saveGitHubToken() { let t = document.getElementById('github-token-input').value.trim(); localStorage.setItem('myGithubToken', t); myGithubToken = t; alert("Token disimpan!"); fetchDataFromGitHub(); }
 
-        // --- SESSION ---
         function doLogin() {
             const u = document.getElementById('login-user').value.trim();
             const p = document.getElementById('login-pass').value;
             const found = usersDB.find(x => x.username === u && x.password === p);
             if (found) { activeUser = found; initDashboard(); }
-            else alert("Username atau Password Salah!");
+            else alert("Gagal!");
         }
 
         function doLogout() { window.location.reload(); }
@@ -426,16 +374,37 @@
             document.getElementById('app-screen').style.display = 'flex';
             document.getElementById('display-user').innerText = activeUser.username;
             document.getElementById('display-role').innerText = activeUser.role;
-            document.getElementById('github-token-input').value = myGithubToken;
             document.getElementById('menu-users').style.display = (activeUser.role === 'Administrator') ? 'flex' : 'none';
             renderTree(); renderUserTable();
             const elem = document.getElementById('tree-container');
             panzoomInstance = Panzoom(elem, { maxScale: 5, minScale: 0.1, canvas: true });
             document.getElementById('panzoom-wrapper').addEventListener('wheel', panzoomInstance.zoomWithWheel);
-            setTimeout(resetZoom, 500);
+            
+            // FOKUS KE TOKOH PERTAMA SAAT BUKA
+            setTimeout(focusAncestor, 600);
         }
 
-        // --- TREE RENDERING ---
+        // FUNGSI BARU: FOKUS KE TOKOH PERTAMA (LELUHUR)
+        function focusAncestor() {
+            const wrapper = document.getElementById('panzoom-wrapper');
+            const content = document.getElementById('tree-container');
+            
+            // Hitung skala: HP zoom lebih dekat (0.9), Desktop standar (0.7)
+            const isMobile = window.innerWidth <= 768;
+            const scale = isMobile ? 0.85 : 0.75;
+            
+            panzoomInstance.zoom(scale, { animate: true });
+
+            setTimeout(() => {
+                // Pusatkan horizontal (X) dan berikan jarak sedikit dari atas (Y)
+                const x = (wrapper.clientWidth / 2) - (content.offsetWidth * scale / 2);
+                const y = isMobile ? 20 : 50; 
+                panzoomInstance.pan(x, y, { animate: true });
+            }, 300);
+        }
+
+        function resetZoom() { focusAncestor(); }
+
         function renderTree() { document.getElementById('tree-container').innerHTML = `<ul>${generateHTML(familyTree, 0)}</ul>`; }
         
         function generateHTML(node, level = 0) {
@@ -458,55 +427,37 @@
 
         let treeAction = ""; let treeTargetId = null;
         function openTreeModal(action, id) {
-            treeAction = action; treeTargetId = id;
-            document.getElementById('modal-tree').style.display = 'flex';
+            treeAction = action; treeTargetId = id; document.getElementById('modal-tree').style.display = 'flex';
             if(action === 'edit') {
                 let n = findNode(familyTree, id);
                 document.getElementById('input-name').value = n.name;
                 document.getElementById('input-partner').value = n.partner || "";
                 document.getElementById('input-desc').value = n.description || "";
-            } else {
-                document.getElementById('input-name').value = ""; document.getElementById('input-partner').value = ""; document.getElementById('input-desc').value = "";
-            }
+            } else { document.getElementById('input-name').value = ""; document.getElementById('input-partner').value = ""; document.getElementById('input-desc').value = ""; }
         }
 
         function saveTreeData() {
-            let name = document.getElementById('input-name').value;
-            if(!name) return alert("Nama harus diisi!");
-            if(treeAction === 'add') {
-                let p = findNode(familyTree, treeTargetId);
-                if(!p.children) p.children = [];
-                p.children.push({ id: Date.now(), name, partner: document.getElementById('input-partner').value, description: document.getElementById('input-desc').value, children: [] });
-            } else {
-                let n = findNode(familyTree, treeTargetId);
-                n.name = name; n.partner = document.getElementById('input-partner').value; n.description = document.getElementById('input-desc').value;
-            }
+            let name = document.getElementById('input-name').value; if(!name) return alert("Isi nama!");
+            if(treeAction === 'add') { let p = findNode(familyTree, treeTargetId); if(!p.children) p.children = []; p.children.push({ id: Date.now(), name, partner: document.getElementById('input-partner').value, description: document.getElementById('input-desc').value, children: [] }); }
+            else { let n = findNode(familyTree, treeTargetId); n.name = name; n.partner = document.getElementById('input-partner').value; n.description = document.getElementById('input-desc').value; }
             closeModal('modal-tree'); renderTree(); syncToGitHub();
         }
 
-        function deleteNode(id) { if(confirm("Hapus data anggota dan keturunannya?")) { let p = findParent(familyTree, id); if(p) { p.children = p.children.filter(c => c.id !== id); renderTree(); syncToGitHub(); } } }
-
-        function resetZoom() { 
-            const w = document.getElementById('panzoom-wrapper'); const c = document.getElementById('tree-container');
-            const scale = Math.min(w.clientWidth / c.offsetWidth, w.clientHeight / c.offsetHeight, 0.7);
-            panzoomInstance.zoom(scale, { animate: true }); panzoomInstance.pan(30, 30);
-        }
+        function deleteNode(id) { if(confirm("Hapus?")) { let p = findParent(familyTree, id); if(p) { p.children = p.children.filter(c => c.id !== id); renderTree(); syncToGitHub(); } } }
 
         function exportPDF() { 
             panzoomInstance.reset(); 
             setTimeout(() => { 
                 const e = document.getElementById('tree-container'); 
-                const opt = { margin: 10, filename: 'Silsilah_Keluarga.pdf', html2canvas: { scale: 2 }, jsPDF: { unit: 'px', format: [e.scrollWidth + 100, e.scrollHeight + 100], orientation: 'l' } }; 
+                const opt = { margin: 10, filename: 'Keluarga.pdf', html2canvas: { scale: 2 }, jsPDF: { unit: 'px', format: [e.scrollWidth + 100, e.scrollHeight + 100], orientation: 'l' } }; 
                 html2pdf().set(opt).from(e).save(); 
             }, 500); 
         }
 
         function exportExcel() { 
-            let rows = [["Nama", "Pasangan", "Keterangan"]]; 
-            function walk(n) { rows.push([n.name, n.partner || "-", n.description || "-"]); if(n.children) n.children.forEach(c => walk(c)); }
-            walk(familyTree);
+            let rows = [["Nama", "Pasangan", "Keterangan"]]; function walk(n) { rows.push([n.name, n.partner || "-", n.description || "-"]); if(n.children) n.children.forEach(c => walk(c)); } walk(familyTree);
             let csv = "data:text/csv;charset=utf-8,\uFEFF" + rows.map(e => e.join(",")).join("\n");
-            let link = document.createElement("a"); link.href = encodeURI(csv); link.download = "Data_Keluarga.csv"; link.click();
+            let link = document.createElement("a"); link.href = encodeURI(csv); link.download = "Keluarga.csv"; link.click();
         }
 
         window.onload = async () => { await fetchDataFromGitHub(); };
