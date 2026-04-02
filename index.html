@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pohon Keluarga Cloud - Blue Edition</title>
+    <title>Silsilah Keluarga Cloud - Blue Edition</title>
     <script src="https://unpkg.com/@panzoom/panzoom/dist/panzoom.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
@@ -11,11 +11,13 @@
             --primary: #1a5276; --secondary: #2980b9; --accent: #3498db; 
             --light-blue: #ebf5fb; --bg: #f4f7f6; --white: #ffffff;
             --card-border: #a9cce3; --shadow: 0 10px 20px rgba(41, 128, 185, 0.15);
+            --text-bio: #546e7a; /* Warna khusus untuk biografi */
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         body { background-color: var(--bg); color: #2c3e50; overflow: hidden; }
 
+        /* STATUS CLOUD */
         #cloud-status {
             position: fixed; bottom: 20px; right: 20px; padding: 12px 25px;
             background: var(--primary); color: white; border-radius: 50px;
@@ -23,18 +25,19 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.2); border: 2px solid var(--accent);
         }
 
-        /* LOGIN SCREEN */
+        /* LOGIN */
         #login-screen { position: fixed; top:0; left:0; width: 100vw; height: 100vh; background: linear-gradient(135deg, var(--primary), var(--accent)); display: flex; justify-content: center; align-items: center; z-index: 9999; }
         .login-box { background: #fff; padding: 30px; border-radius: 20px; width: 90%; max-width: 350px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
         .login-box h2 { margin-bottom: 20px; color: var(--primary); }
         .login-box input { width: 100%; padding: 12px; margin-bottom: 15px; border: 2px solid #eee; border-radius: 10px; outline: none; }
-        .login-box button { width: 100%; padding: 12px; background: var(--secondary); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .login-box button { width: 100%; padding: 12px; background: var(--secondary); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .login-box button:hover { background: var(--primary); }
 
         #app-screen { display: none; width: 100vw; height: 100vh; display: flex; }
         
-        /* SIDEBAR (Responsive) */
+        /* SIDEBAR */
         .sidebar { width: 260px; background: var(--primary); color: white; display: flex; flex-direction: column; z-index: 1000; transition: 0.3s ease; }
-        .sidebar-header { padding: 25px 20px; text-align: center; background: rgba(0,0,0,0.1); }
+        .sidebar-header { padding: 25px 20px; text-align: center; background: rgba(0,0,0,0.1); border-bottom: 1px solid rgba(255,255,255,0.1); }
         .sidebar-menu { list-style: none; padding: 15px 0; flex-grow: 1; }
         .sidebar-menu li { padding: 12px 25px; cursor: pointer; border-left: 5px solid transparent; transition: 0.2s; display: flex; align-items: center; gap: 12px; }
         .sidebar-menu li:hover, .sidebar-menu li.active { background: rgba(255,255,255,0.1); border-left-color: var(--accent); }
@@ -42,11 +45,11 @@
 
         .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; background: var(--light-blue); }
         
-        /* TOOLBAR (Responsive) */
+        /* TOOLBAR */
         .toolbar { background: var(--white); padding: 10px 15px; display: flex; gap: 10px; align-items: center; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .btn-hamburger { display: none; background: transparent; border: none; font-size: 1.8rem; color: var(--primary); cursor: pointer; }
         .btn-tool { padding: 8px 12px; border: none; border-radius: 6px; font-size: 0.75rem; cursor: pointer; color: white; font-weight: bold; }
-        .toolbar-text { font-size: 0.75rem; color: #7f8c8d; flex-grow: 1; }
+        .toolbar-text { font-size: 0.75rem; color: #7f8c8d; flex-grow: 1; font-style: italic; }
 
         /* TREE AREA */
         .tree-area { flex-grow: 1; position: relative; overflow: hidden; cursor: grab; }
@@ -54,85 +57,91 @@
         .tree ul { padding-top: 30px; position: relative; display: flex; justify-content: center; }
         .tree li { text-align: center; list-style-type: none; position: relative; padding: 30px 5px 0 5px; display: flex; flex-direction: column; align-items: center; }
         
-        /* Garis Konektor */
+        /* GARIS KETURUNAN */
         .tree li::before, .tree li::after { content: ''; position: absolute; top: 0; right: 50%; border-top: 3px solid var(--card-border); width: 50%; height: 30px; }
         .tree li::after { right: auto; left: 50%; border-left: 3px solid var(--card-border); }
         .tree li:only-child::after, .tree li:only-child::before { display: none; }
+        .tree li:only-child { padding-top: 0; }
         .tree li:first-child::after { border-radius: 8px 0 0 0; }
         .tree li:last-child::before { border-right: 3px solid var(--card-border); border-radius: 0 8px 0 0; }
+        .tree li:first-child::before, .tree li:last-child::after { border: 0 none; }
         .tree ul ul::before { content: ''; position: absolute; top: 0; left: 50%; border-left: 3px solid var(--card-border); width: 0; height: 30px; }
 
-        /* CARD */
+        /* CARD STYLE */
         .node-card { 
             background: var(--white); border: 1px solid var(--card-border); padding: 15px; border-radius: 12px; 
-            min-width: 170px; max-width: 200px; box-shadow: var(--shadow); position: relative; z-index: 1; 
-            border-top: 4px solid var(--accent);
+            min-width: 180px; max-width: 220px; box-shadow: var(--shadow); position: relative; z-index: 1; 
+            border-top: 4px solid var(--accent); transition: 0.3s;
         }
+        .node-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+        
+        .generation-badge { background: var(--light-blue); color: var(--primary); font-size: 0.65rem; font-weight: 800; padding: 2px 8px; border-radius: 10px; margin-bottom: 8px; display: inline-block; border: 1px solid var(--card-border); }
         .name { font-weight: bold; color: var(--primary); font-size: 1rem; margin-bottom: 5px; }
-        .partner { font-size: 0.8rem; color: #d35400; background: #fff4e6; border-radius: 6px; padding: 3px 8px; display: inline-block; margin-bottom: 5px;}
+        .partner { font-size: 0.8rem; color: #d35400; background: #fff4e6; border-radius: 6px; padding: 3px 8px; display: inline-block; margin-bottom: 5px; border: 1px solid #ffe3c4;}
+        .description-box { font-size: 0.75rem; color: var(--text-bio); background: #f8f9fa; border-radius: 6px; padding: 8px; margin-top: 5px; text-align: left; border-left: 3px solid var(--card-border); font-style: italic; }
 
-        /* ZOOM CONTROLS */
-        .zoom-controls { position: absolute; bottom: 20px; left: 20px; display: flex; flex-direction: column; gap: 8px; }
+        /* ZOOM */
+        .zoom-controls { position: absolute; bottom: 20px; left: 20px; display: flex; flex-direction: column; gap: 8px; z-index: 100; }
         .btn-zoom { width: 40px; height: 40px; border-radius: 8px; border: none; background: var(--white); color: var(--primary); font-size: 1.2rem; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-
-        /* MANAJEMEN USER TABLE */
-        .user-container { background: white; padding: 20px; border-radius: 15px; margin-top: 15px; box-shadow: var(--shadow); }
-        .table-responsive { overflow-x: auto; width: 100%; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; min-width: 500px;}
-        th { background: var(--primary); color: white; padding: 12px; text-align: left; }
-        td { padding: 12px; border-bottom: 1px solid #eee; }
 
         /* CONTEXT MENU */
         .custom-menu {
             display: none; position: fixed; background: white; min-width: 180px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             z-index: 10000; border-radius: 12px; padding: 8px 0; border: 1px solid #eee;
         }
-        .custom-menu-item { padding: 10px 20px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; }
-        .custom-menu-item:hover { background: var(--light-blue); }
+        .custom-menu-item { padding: 10px 20px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; color: #444; }
+        .custom-menu-item:hover { background: var(--light-blue); color: var(--secondary); }
 
         /* MODAL */
         .modal { display: none; position: fixed; z-index: 10001; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); justify-content: center; align-items: center; padding: 10px; }
-        .modal-content { background: #fff; padding: 25px; border-radius: 15px; width: 100%; max-width: 400px; max-height: 90vh; overflow-y: auto; }
+        .modal-content { background: #fff; padding: 25px; border-radius: 15px; width: 100%; max-width: 450px; max-height: 90vh; overflow-y: auto; }
         .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; color: var(--primary); }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; outline: none; }
+        .form-group input:focus { border-color: var(--accent); }
         .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
 
-        /* MOBILE RESPONSIVE CSS */
+        /* USER TABLE */
+        .table-responsive { overflow-x: auto; width: 100%; background: white; border-radius: 10px; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; min-width: 500px; }
+        th { background: var(--primary); color: white; padding: 12px; text-align: left; }
+        td { padding: 12px; border-bottom: 1px solid #eee; }
+
+        /* RESPONSIVE HP */
         @media (max-width: 768px) {
-            .sidebar { position: fixed; left: -260px; top: 0; height: 100%; }
+            .sidebar { position: fixed; left: -260px; top: 0; height: 100%; box-shadow: 5px 0 15px rgba(0,0,0,0.1); }
             .sidebar.open { left: 0; }
             .btn-hamburger { display: block; }
             .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
             .sidebar-overlay.active { display: block; }
             .toolbar-text { display: none; }
-            .btn-tool { padding: 6px 10px; font-size: 0.7rem; }
-            .node-card { min-width: 140px; padding: 10px; }
-            .name { font-size: 0.9rem; }
+            .node-card { min-width: 150px; padding: 10px; }
         }
     </style>
 </head>
 <body onclick="hideCustomMenu()" oncontextmenu="return false;">
 
-    <div id="cloud-status">☁️ Sinkronisasi...</div>
+    <div id="cloud-status">☁️ Sinkronisasi Ke GitHub...</div>
 
     <!-- ACTION MENU (KLIK KANAN) -->
     <div id="action-menu" class="custom-menu">
+        <div style="padding: 5px 20px; font-size: 0.7rem; font-weight: bold; color: var(--accent);">OPSI EDITING</div>
         <div class="custom-menu-item" onclick="menuAction('edit')">✏️ Edit Profil</div>
         <div class="custom-menu-item" onclick="menuAction('add')">👶 Tambah Anak</div>
         <div class="custom-menu-item" onclick="menuAction('wife')">👩 Tambah Istri</div>
         <div class="custom-menu-item" onclick="menuAction('husband')">👨 Tambah Suami</div>
-        <div id="menu-delete-opt" class="custom-menu-item" style="color:red;" onclick="menuAction('delete')">🗑️ Hapus</div>
+        <div id="menu-delete-opt" class="custom-menu-item" style="color:#e74c3c;" onclick="menuAction('delete')">🗑️ Hapus Data</div>
     </div>
 
     <!-- LOGIN -->
     <div id="login-screen">
         <div class="login-box">
-            <h2>🌳 Pohon Keluarga</h2>
+            <h1 style="font-size: 3rem;">🌳</h1>
+            <h2>Pohon Keluarga</h2>
             <input type="text" id="login-user" placeholder="Username">
             <input type="password" id="login-pass" placeholder="Password">
-            <button onclick="doLogin()">Masuk</button>
-            <p id="login-status-text" style="font-size: 0.7rem; margin-top: 10px;"></p>
+            <button onclick="doLogin()">Masuk Sistem</button>
+            <p id="login-status-text" style="font-size: 0.75rem; margin-top: 15px; color: var(--primary);"></p>
         </div>
     </div>
 
@@ -142,7 +151,7 @@
         <div id="sidebar" class="sidebar">
             <div class="sidebar-header">
                 <h3>SILSILAH</h3>
-                <span id="display-role" style="font-size: 0.7rem; background: var(--accent); padding: 2px 8px; border-radius: 10px;">User</span>
+                <span id="display-role" style="font-size: 0.7rem; background: var(--accent); padding: 2px 10px; border-radius: 10px;">Role</span>
                 <p id="display-user" style="margin-top: 10px; font-weight: bold;"></p>
             </div>
             <ul class="sidebar-menu">
@@ -156,7 +165,7 @@
             <div id="tree-page" style="display: flex; flex-direction: column; height: 100%;">
                 <div class="toolbar">
                     <button class="btn-hamburger" onclick="toggleSidebar()">☰</button>
-                    <span class="toolbar-text">Klik Kiri: Nasab | Klik Kanan: Edit</span>
+                    <span class="toolbar-text"><b>Klik Kiri:</b> Nasab | <b>Klik Kanan:</b> Edit Data</span>
                     <button class="btn-tool" style="background:#e74c3c" onclick="exportPDF()">PDF</button>
                     <button class="btn-tool" style="background:#27ae60" onclick="exportExcel()">Excel</button>
                     <button class="btn-tool" style="background:var(--accent)" onclick="fetchDataFromGitHub(true)">🔄</button>
@@ -171,22 +180,24 @@
                 </div>
             </div>
 
-            <!-- MANAJEMEN USER -->
-            <div id="users-page" style="display:none; padding: 20px; overflow-y: auto;">
-                <button class="btn-hamburger" onclick="toggleSidebar()" style="display:inline-block; margin-bottom: 10px;">☰ Menu</button>
-                <h2 style="color:var(--primary)">👥 Manajemen Pengguna</h2>
-                <div class="user-container">
+            <!-- HALAMAN USER (HANYA ADMINISTRATOR) -->
+            <div id="users-page" style="display:none; padding: 25px; overflow-y: auto;">
+                <button class="btn-hamburger" onclick="toggleSidebar()" style="display:inline-block; margin-bottom: 15px;">☰ Menu</button>
+                <h2 style="color:var(--primary); border-bottom: 2px solid var(--accent); padding-bottom: 10px;">👥 Manajemen Pengguna</h2>
+                
+                <div style="background: white; padding: 20px; border-radius: 15px; box-shadow: var(--shadow); margin-top: 20px;">
                     <h4 style="margin-bottom: 10px;">🔑 GitHub API Token</h4>
-                    <input type="password" id="github-token-input" placeholder="ghp_xxx" style="width: 80%; padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
-                    <button class="btn-tool" style="background:var(--secondary); padding: 9px;" onclick="saveGitHubToken()">Simpan</button>
+                    <input type="password" id="github-token-input" placeholder="ghp_xxxxxxxxxxxx" style="width: 70%; padding: 10px; border-radius: 8px; border: 1px solid #ddd;">
+                    <button class="btn-tool" style="background:var(--primary); padding: 10px 20px;" onclick="saveGitHubToken()">Simpan</button>
                     
-                    <div style="margin-top: 20px;">
-                        <button class="btn-tool" style="background:var(--accent); font-size: 0.9rem;" onclick="openUserModal('add')">+ Tambah User Baru</button>
+                    <div style="margin-top: 30px; display: flex; justify-content: space-between; align-items: center;">
+                        <h3>Daftar Pengguna</h3>
+                        <button class="btn-tool" style="background:var(--secondary); font-size: 0.85rem;" onclick="openUserModal('add')">+ Tambah User</button>
                     </div>
 
                     <div class="table-responsive">
                         <table>
-                            <thead><tr><th>Username</th><th>Role</th><th>Aksi</th></tr></thead>
+                            <thead><tr><th>Username</th><th>Akses</th><th>Opsi</th></tr></thead>
                             <tbody id="user-table-body"></tbody>
                         </table>
                     </div>
@@ -195,16 +206,16 @@
         </div>
     </div>
 
-    <!-- MODAL TREE -->
+    <!-- MODAL EDIT POHON -->
     <div class="modal" id="modal-tree">
         <div class="modal-content">
             <h3 id="modal-title">Edit Data</h3>
             <div class="form-group"><label id="label-name">Nama:</label><input type="text" id="input-name"></div>
             <div class="form-group"><label id="label-partner">Pasangan:</label><input type="text" id="input-partner"></div>
-            <div class="form-group"><label>Keterangan:</label><textarea id="input-desc" rows="3"></textarea></div>
+            <div class="form-group"><label>Keterangan/Biografi:</label><textarea id="input-desc" rows="4" placeholder="Tulis biografi singkat di sini..."></textarea></div>
             <div class="modal-actions">
-                <button class="btn-cancel" onclick="closeModal('modal-tree')">Batal</button>
-                <button class="btn-save" style="background:var(--secondary); color:white; border:none; padding:10px; border-radius:5px;" onclick="saveTreeData()">Simpan</button>
+                <button class="btn-cancel" style="padding:10px 20px; cursor:pointer;" onclick="closeModal('modal-tree')">Batal</button>
+                <button class="btn-save" style="background:var(--secondary); color:white; border:none; padding:10px 25px; border-radius:8px; cursor:pointer;" onclick="saveTreeData()">Simpan Perubahan</button>
             </div>
         </div>
     </div>
@@ -212,38 +223,40 @@
     <!-- MODAL USER -->
     <div class="modal" id="modal-user">
         <div class="modal-content">
-            <h3 id="modal-user-title">Tambah User</h3>
+            <h3 id="modal-user-title">Tambah User Baru</h3>
             <div class="form-group"><label>Username:</label><input type="text" id="input-username"></div>
-            <div class="form-group"><label>Password:</label><input type="password" id="input-password"></div>
+            <div class="form-group"><label>Password:</label><input type="password" id="input-password" placeholder="Kosongkan jika tidak ubah"></div>
             <div class="form-group"><label>Hak Akses:</label>
                 <select id="input-role">
-                    <option value="Admin">Admin (Tambah/Edit Pohon)</option>
+                    <option value="Admin">Admin (Edit Pohon)</option>
                     <option value="Administrator">Administrator (Hak Penuh)</option>
                 </select>
             </div>
             <div class="modal-actions">
                 <button class="btn-cancel" onclick="closeModal('modal-user')">Batal</button>
-                <button class="btn-save" style="background:var(--accent); color:white; border:none; padding:10px; border-radius:5px;" onclick="saveUserData()">Simpan User</button>
+                <button class="btn-save" style="background:var(--accent); color:white; border:none; padding:10px 20px; border-radius:8px;" onclick="saveUserData()">Simpan User</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL NASAB -->
+    <!-- MODAL NASAB (KLIK KIRI) -->
     <div class="modal" id="modal-nasab">
         <div class="modal-content" style="text-align:center;">
-            <h3>📜 Garis Keturunan</h3>
-            <div id="nasab-content" style="margin: 20px 0; padding: 15px; background: #f0f7ff; border-radius: 10px;"></div>
-            <button class="btn-save" style="background:var(--primary); color:white; border:none; padding:10px 20px; border-radius:5px;" onclick="closeModal('modal-nasab')">Tutup</button>
+            <h1 style="margin-bottom: 10px;">📜</h1>
+            <h3>Garis Keturunan (Nasab)</h3>
+            <div id="nasab-content" style="margin: 20px 0; font-weight: 500;"></div>
+            <button class="btn-save" style="background:var(--primary); color:white; border:none; padding:10px 30px; border-radius:8px;" onclick="closeModal('modal-nasab')">Tutup</button>
         </div>
     </div>
 
     <script>
+        // --- KONFIGURASI GITHUB ---
         const GITHUB_OWNER = "contemplatio-001"; 
         const GITHUB_REPO = "Dipabesari"; 
         const GITHUB_FILE_PATH = "data.json";
 
         let usersDB = [{ username: 'superadmin', password: '12345', role: 'Administrator' }];
-        let familyTree = { id: 1, name: "Leluhur Utama", partner: "", children: [] };
+        let familyTree = { id: 1, name: "Leluhur Utama", partner: "", children: [], description: "" };
         let activeUser = null; 
         let githubFileSha = ""; 
         let myGithubToken = localStorage.getItem('myGithubToken') || "";
@@ -252,7 +265,7 @@
         function utf8_to_b64(str) { return window.btoa(unescape(encodeURIComponent(str))); }
         function b64_to_utf8(str) { return decodeURIComponent(escape(window.atob(str))); }
 
-        // --- CORE LOGIC ---
+        // --- NAVIGASI ---
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('open');
             document.getElementById('sidebar-overlay').classList.toggle('active');
@@ -266,18 +279,18 @@
 
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        // --- USER MANAGEMENT ---
+        // --- MANAJEMEN USER ---
         function renderUserTable() {
             const tbody = document.getElementById('user-table-body');
             tbody.innerHTML = "";
             usersDB.forEach(u => {
                 const isSuper = u.username === 'superadmin';
                 tbody.innerHTML += `<tr>
-                    <td>${u.username}</td>
-                    <td>${u.role}</td>
+                    <td><b>${u.username}</b></td>
+                    <td><span style="font-size:0.8rem; background:#eee; padding:2px 8px; border-radius:5px;">${u.role}</span></td>
                     <td>
-                        <button onclick="openUserModal('edit', '${u.username}')" style="padding:4px 8px; font-size:10px;">Edit</button>
-                        ${!isSuper ? `<button onclick="deleteUser('${u.username}')" style="color:red; padding:4px 8px; font-size:10px;">Hapus</button>` : ''}
+                        <button onclick="openUserModal('edit', '${u.username}')" style="background:var(--accent); color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">Edit</button>
+                        ${!isSuper ? `<button onclick="deleteUser('${u.username}')" style="background:#e74c3c; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; margin-left:5px;">Hapus</button>` : ''}
                     </td>
                 </tr>`;
             });
@@ -292,11 +305,13 @@
                 document.getElementById('input-username').value = u.username;
                 document.getElementById('input-username').disabled = true;
                 document.getElementById('input-role').value = u.role;
+                document.getElementById('modal-user-title').innerText = "Edit User";
             } else {
                 editingUser = null;
                 document.getElementById('input-username').value = "";
                 document.getElementById('input-username').disabled = false;
                 document.getElementById('input-password').value = "";
+                document.getElementById('modal-user-title').innerText = "Tambah User Baru";
             }
         }
 
@@ -304,31 +319,26 @@
             let u = document.getElementById('input-username').value.trim();
             let p = document.getElementById('input-password').value;
             let r = document.getElementById('input-role').value;
-            if(!u) return alert("Username wajib diisi!");
+            if(!u) return alert("Username wajib!");
             
             if(editingUser) {
                 let user = usersDB.find(x => x.username === editingUser);
                 if(p) user.password = p;
                 user.role = r;
             } else {
-                if(usersDB.find(x => x.username === u)) return alert("User sudah ada!");
+                if(usersDB.find(x => x.username === u)) return alert("Username sudah ada!");
                 usersDB.push({ username: u, password: p || "123", role: r });
             }
             closeModal('modal-user'); renderUserTable(); syncToGitHub();
         }
 
-        function deleteUser(username) {
-            if(confirm(`Hapus user ${username}?`)) {
-                usersDB = usersDB.filter(x => x.username !== username);
-                renderUserTable(); syncToGitHub();
-            }
-        }
+        function deleteUser(u) { if(confirm(`Hapus user ${u}?`)) { usersDB = usersDB.filter(x => x.username !== u); renderUserTable(); syncToGitHub(); } }
 
-        // --- TREE ACTIONS ---
+        // --- TREE INTERACTION ---
         function handleNodeClick(e, id) {
             e.stopPropagation(); e.preventDefault();
             const path = []; findPathToRoot(familyTree, id, path);
-            document.getElementById('nasab-content').innerHTML = path.reverse().map((n, i) => i === 0 ? `<b>${n.name}</b>` : `anak dari <b>${n.name}</b>`).join("<br> ↓ <br>");
+            document.getElementById('nasab-content').innerHTML = path.reverse().map((n, i) => i === 0 ? `<b style="color:var(--accent)">${n.name}</b>` : `anak dari <b>${n.name}</b>`).join("<br> ↓ <br>");
             document.getElementById('modal-nasab').style.display = 'flex';
         }
 
@@ -337,7 +347,7 @@
             selectedNodeId = id;
             const menu = document.getElementById('action-menu');
             menu.style.display = 'block';
-            menu.style.left = e.pageX + 'px';
+            menu.style.left = (e.pageX > window.innerWidth - 200 ? e.pageX - 180 : e.pageX) + 'px';
             menu.style.top = e.pageY + 'px';
             document.getElementById('menu-delete-opt').style.display = (id === 1 || activeUser.role !== 'Administrator') ? 'none' : 'flex';
         }
@@ -363,6 +373,8 @@
 
         // --- GITHUB SYNC ---
         async function fetchDataFromGitHub(manual = false) {
+            const statusText = document.getElementById('login-status-text');
+            if(statusText) statusText.innerText = "⏳ Menghubungkan ke server...";
             try {
                 let url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}`;
                 let headers = myGithubToken ? { 'Authorization': `token ${myGithubToken}` } : {};
@@ -371,9 +383,10 @@
                     let data = await res.json(); githubFileSha = data.sha; 
                     let parsed = JSON.parse(b64_to_utf8(data.content));
                     familyTree = parsed.tree; usersDB = parsed.users;
+                    if(statusText) statusText.innerText = "✅ Server Terhubung!";
                     if(document.getElementById('app-screen').style.display === 'flex') { renderTree(); renderUserTable(); }
                 }
-            } catch (e) { console.error(e); }
+            } catch (e) { if(statusText) statusText.innerText = "❌ Gagal koneksi cloud."; }
         }
 
         async function syncToGitHub() {
@@ -384,11 +397,16 @@
                 let res = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE_PATH}`, {
                     method: 'PUT',
                     headers: { 'Authorization': `token ${myGithubToken}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: `Update`, content, sha: githubFileSha })
+                    body: JSON.stringify({ message: `Update oleh ${activeUser.username}`, content, sha: githubFileSha })
                 });
-                if (res.ok) { let result = await res.json(); githubFileSha = result.content.sha; }
-            } catch (e) {}
+                if (res.ok) { let result = await res.json(); githubFileSha = result.content.sha; ui.innerText = "✅ Tersimpan!"; }
+            } catch (e) { ui.innerText = "❌ Gagal Simpan"; }
             setTimeout(() => ui.style.display = 'none', 2000);
+        }
+
+        function saveGitHubToken() {
+            let t = document.getElementById('github-token-input').value.trim();
+            localStorage.setItem('myGithubToken', t); myGithubToken = t; alert("Token disimpan!"); fetchDataFromGitHub();
         }
 
         // --- SESSION ---
@@ -397,41 +415,38 @@
             const p = document.getElementById('login-pass').value;
             const found = usersDB.find(x => x.username === u && x.password === p);
             if (found) { activeUser = found; initDashboard(); }
-            else alert("Username/Password Salah!");
+            else alert("Username atau Password Salah!");
         }
 
+        function doLogout() { window.location.reload(); }
+
+        let panzoomInstance; 
         function initDashboard() {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-screen').style.display = 'flex';
             document.getElementById('display-user').innerText = activeUser.username;
             document.getElementById('display-role').innerText = activeUser.role;
             document.getElementById('github-token-input').value = myGithubToken;
-            
-            // Hak Akses Manajemen User hanya untuk Administrator
             document.getElementById('menu-users').style.display = (activeUser.role === 'Administrator') ? 'flex' : 'none';
-            
-            renderTree();
-            renderUserTable();
+            renderTree(); renderUserTable();
             const elem = document.getElementById('tree-container');
             panzoomInstance = Panzoom(elem, { maxScale: 5, minScale: 0.1, canvas: true });
             document.getElementById('panzoom-wrapper').addEventListener('wheel', panzoomInstance.zoomWithWheel);
             setTimeout(resetZoom, 500);
         }
 
-        function saveGitHubToken() {
-            let t = document.getElementById('github-token-input').value.trim();
-            localStorage.setItem('myGithubToken', t); myGithubToken = t; alert("Token Tersimpan!");
-        }
-
-        function doLogout() { window.location.reload(); }
-
-        // --- TREE CORE ---
+        // --- TREE RENDERING ---
         function renderTree() { document.getElementById('tree-container').innerHTML = `<ul>${generateHTML(familyTree, 0)}</ul>`; }
+        
         function generateHTML(node, level = 0) {
+            let label = level === 0 ? "👑 Leluhur" : `Keturunan Ke-${level}`;
+            let bio = node.description ? `<div class="description-box">📝 ${node.description}</div>` : '';
             return `<li>
                 <div class="node-card" onclick="handleNodeClick(event, ${node.id})" oncontextmenu="handleNodeRightClick(event, ${node.id})">
+                    <div class="generation-badge">${label}</div>
                     <div class="name">${node.name}</div>
                     ${node.partner ? `<div class="partner">💍 ${node.partner}</div>` : ''}
+                    ${bio}
                 </div>
                 ${node.children && node.children.length > 0 ? `<ul>${node.children.map(c => generateHTML(c, level+1)).join('')}</ul>` : ''}
             </li>`;
@@ -451,16 +466,17 @@
                 document.getElementById('input-partner').value = n.partner || "";
                 document.getElementById('input-desc').value = n.description || "";
             } else {
-                document.getElementById('input-name').value = ""; document.getElementById('input-partner').value = "";
+                document.getElementById('input-name').value = ""; document.getElementById('input-partner').value = ""; document.getElementById('input-desc').value = "";
             }
         }
 
         function saveTreeData() {
             let name = document.getElementById('input-name').value;
+            if(!name) return alert("Nama harus diisi!");
             if(treeAction === 'add') {
                 let p = findNode(familyTree, treeTargetId);
                 if(!p.children) p.children = [];
-                p.children.push({ id: Date.now(), name, partner: document.getElementById('input-partner').value, children: [] });
+                p.children.push({ id: Date.now(), name, partner: document.getElementById('input-partner').value, description: document.getElementById('input-desc').value, children: [] });
             } else {
                 let n = findNode(familyTree, treeTargetId);
                 n.name = name; n.partner = document.getElementById('input-partner').value; n.description = document.getElementById('input-desc').value;
@@ -468,36 +484,29 @@
             closeModal('modal-tree'); renderTree(); syncToGitHub();
         }
 
-        function deleteNode(id) {
-            if(confirm("Hapus?")) {
-                let p = findParent(familyTree, id);
-                if(p) { p.children = p.children.filter(c => c.id !== id); renderTree(); syncToGitHub(); }
-            }
-        }
+        function deleteNode(id) { if(confirm("Hapus data anggota dan keturunannya?")) { let p = findParent(familyTree, id); if(p) { p.children = p.children.filter(c => c.id !== id); renderTree(); syncToGitHub(); } } }
 
         function resetZoom() { 
-            const w = document.getElementById('panzoom-wrapper');
-            const c = document.getElementById('tree-container');
+            const w = document.getElementById('panzoom-wrapper'); const c = document.getElementById('tree-container');
             const scale = Math.min(w.clientWidth / c.offsetWidth, w.clientHeight / c.offsetHeight, 0.7);
-            panzoomInstance.zoom(scale, { animate: true });
-            panzoomInstance.pan(20, 20);
+            panzoomInstance.zoom(scale, { animate: true }); panzoomInstance.pan(30, 30);
         }
 
         function exportPDF() { 
             panzoomInstance.reset(); 
             setTimeout(() => { 
                 const e = document.getElementById('tree-container'); 
-                const opt = { margin: 10, filename: 'Keluarga.pdf', html2canvas: { scale: 2 }, jsPDF: { unit: 'px', format: [e.scrollWidth + 50, e.scrollHeight + 50], orientation: 'l' } }; 
+                const opt = { margin: 10, filename: 'Silsilah_Keluarga.pdf', html2canvas: { scale: 2 }, jsPDF: { unit: 'px', format: [e.scrollWidth + 100, e.scrollHeight + 100], orientation: 'l' } }; 
                 html2pdf().set(opt).from(e).save(); 
             }, 500); 
         }
 
         function exportExcel() { 
-            let rows = [["Nama", "Pasangan"]]; 
-            function walk(n) { rows.push([n.name, n.partner || "-"]); if(n.children) n.children.forEach(c => walk(c)); }
+            let rows = [["Nama", "Pasangan", "Keterangan"]]; 
+            function walk(n) { rows.push([n.name, n.partner || "-", n.description || "-"]); if(n.children) n.children.forEach(c => walk(c)); }
             walk(familyTree);
             let csv = "data:text/csv;charset=utf-8,\uFEFF" + rows.map(e => e.join(",")).join("\n");
-            let link = document.createElement("a"); link.href = encodeURI(csv); link.download = "Keluarga.csv"; link.click();
+            let link = document.createElement("a"); link.href = encodeURI(csv); link.download = "Data_Keluarga.csv"; link.click();
         }
 
         window.onload = async () => { await fetchDataFromGitHub(); };
